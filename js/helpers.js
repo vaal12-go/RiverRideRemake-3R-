@@ -39,7 +39,7 @@ function fillArray(tileID) {
     for (var y = 0; y < no_rows; y++) {
       console.log('New line :>> ');
       for (var x = 0; x < row_len; x++) {
-        console.log('i :>> ', i);
+        // console.log('i :>> ', i);
         var x_coord = x * tileWidth;
         // console.log('x_coord :>> ', x_coord);
         var y_coord = y * tileWidth;

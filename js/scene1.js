@@ -1,3 +1,12 @@
+window.addEventListener("load", ()=>{
+  console.log('I am loaded :>> ');
+  document.getElementById("phaser-game-parent").addEventListener(
+    "focusout", ()=> {
+      console.log('parent lost focus :>> ');
+    }
+  )
+});
+
 class Example extends Phaser.Scene {
   //Example from: https://phaser.io/examples/v3/view/game-objects/render-texture/graphics-to-render-texture
   rt;
@@ -10,6 +19,7 @@ class Example extends Phaser.Scene {
   towerDefenceTileArray;
   main_tile_plate;
   fixed_plate;
+  fixed_plate_img;
   screenTilesArrays;
 
   airplane_sprite;
@@ -84,7 +94,7 @@ class Example extends Phaser.Scene {
         }
       }
     }
-    // this.cameras.main.scrollY = this.game.config.height * 2;
+    this.cameras.main.scrollY = this.game.config.height * 2;
 
     this.add.image(
       this.game.config.width / 2,
@@ -92,11 +102,14 @@ class Example extends Phaser.Scene {
       this.main_tile_plate
     );
 
-    this.add.image(
-      this.game.config.width / 2,
-      this.game.config.height / 2,
+    this.fixed_plate_img = this.add.image(
+      0,
+      this.game.config.height,
       this.fixed_plate
-    );
+    ).setOrigin(0);
+
+    this.fixed_plate_img.y = this.game.config.height*2;
+    console.log('this.fixed_plate_img :>> ', this.fixed_plate_img);
 
     this.towerDefenceTileTexture = this.textures.get("tower_defence_tileset");
     this.towerDefenceTileArray = getTileArrayFromTileset(
@@ -115,10 +128,10 @@ class Example extends Phaser.Scene {
     this.add.image(100, 100, this.tileArr[1]);
 
     for (var i = 0; i < 10; i++) {
-      console.log(
-        "this.towerDefenceTileArray[i] :>> ",
-        this.towerDefenceTileArray[i]
-      );
+      // console.log(
+      //   "this.towerDefenceTileArray[i] :>> ",
+      //   this.towerDefenceTileArray[i]
+      // );
       this.main_tile_plate.draw(
         this.towerDefenceTileArray[276 + i],
         i * 64,
@@ -264,14 +277,19 @@ class Example extends Phaser.Scene {
     for (var digit in digitArr) {
       this.fixed_plate.draw(
         this.towerDefenceTileArray[276 + (digitArr[digit])],
-        100+i*32,
-        500
+        this.game.config.width -200+i*32,
+        this.game.config.height - 100
       );
       i++;
     }
+    this.fixed_plate.draw(
+      this.towerDefenceTileArray[278],
+      250,
+      250
+    );
 
     // console.log('digitArr :>> ', digitArr);
-  }
+  };//END drawNumber(number) {
 
   update() {
     this.cycleNo += 1;
@@ -295,16 +313,24 @@ class Example extends Phaser.Scene {
       // this.airplane_sprite.y = this.airplane_sprite.x - 2
     }
 
-    this.fixed_plate.beginDraw();
+    
     if (this.cycleNo % 2 == 0) {
+      this.fixed_plate.beginDraw();
       //TODO: this probably may be optimized with https://newdocs.phaser.io/docs/3.70.0/Phaser.Textures.DynamicTexture#fill
-      this.fixed_plate.clear();
+      this.fixed_plate.clear(100, 500, 200, 100);
       
       this.drawNumber(this.cycleNo)
       this.fixed_plate.endDraw();
+      
     }
 
-    // this.cameras.main.scrollY -= 4;
+    this.cameras.main.scrollY -= 4;
+    this.fixed_plate_img.y -= 4
+
+    if (this.cameras.main.scrollY <= 0) {
+        this.cameras.main.scrollY = this.game.config.height * 2;
+        this.fixed_plate_img.y = this.game.config.height *2;
+    }
     // For copying parts of texture look into: https://photonstorm.github.io/phaser3-docs/Phaser.GameObjects.Blitter.html
     // https://photonstorm.github.io/phaser3-docs/Phaser.GameObjects.GameObjectFactory.html#blitter__anchor
     // if (this.cameras.main.scrollY == this.game.config.height) {
@@ -313,10 +339,10 @@ class Example extends Phaser.Scene {
     // }
     // if (this.cameras.main.scrollY <= 0) {
     //   this.cameras.main.scrollY = this.game.config.height * 2;
-    //   // var scr1 = fillArray(56);
-    //   // this.putRandomTanks(scr1)
-    //   // this.screenTilesArrays[0] = scr1;
-    //   // this.drawArrayToTexture(this.screenTilesArrays[0], 0)
+    //   var scr1 = fillArray(56);
+    //   this.putRandomTanks(scr1)
+    //   this.screenTilesArrays[0] = scr1;
+    //   this.drawArrayToTexture(this.screenTilesArrays[0], 0)
     // }
     // console.log('this.game.camera :>> ', this.game.camera);
     // this.rt.camera.rotation -= 0.01;
