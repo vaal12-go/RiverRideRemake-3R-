@@ -3,13 +3,6 @@ function getRandomInt(max) {
     return Math.floor(Math.random() * max);
 }
 
-console.log("I am in");
-
-
-SCENE_ROW_LEN = 20;
-  SCENE_ROW_NO = 27;
-
-
 function fillArray(tileID) {
     var scrArr = [];
     for (var y = 0; y < SCENE_ROW_NO; y++) {

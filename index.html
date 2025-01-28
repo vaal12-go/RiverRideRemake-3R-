@@ -2,7 +2,9 @@
 <html>
   <head>
     <script src="js/phaser-arcade-physics.min.js"></script>
+    <script src="js/constants.js"></script>
     <script src="js/helpers.js"></script>
+    <script src="js/bgUpdater.js"></script>
     <script src="js/scene1.js"></script>
     
   </head>
@@ -11,8 +13,8 @@
       window.onload = () => {
         const config = {
           type: Phaser.AUTO,
-          width: 640,
-          height: 864,
+          width: 640, //20 tiles of 32px
+          height: 864, //27 tiles of 32px
           scene: Example,
           parent: "phaser-game-parent"
         //   physics: {

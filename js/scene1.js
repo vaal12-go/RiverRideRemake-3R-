@@ -30,10 +30,12 @@ class Example extends Phaser.Scene {
   space_key;
   cycleNo;
 
+  bgUpdater = null;
+
   preload() {
     this.load.image("bg1", "img/red.png");
     this.load.image("ybg", "img/yellow_bg.png");
-    this.load.image("tls", "img/tiles_packed_32.png");
+    this.load.image("bg_tileset", "img/tiles_packed_32.png");
     this.load.image("tower_defence_tileset", "img/towerDefense_tilesheet.png");
     this.load.audio("gunShot", [
       "audio/Beefy-AR10-7.62x51-308-Close-Single-Gunshot-B.mp3",
@@ -43,11 +45,9 @@ class Example extends Phaser.Scene {
   create() {
     this.cycleNo = 0;
 
-    this.main_tile_plate = this.textures.addDynamicTexture(
-      "mainTexture",
-      this.game.config.width,
-      this.game.config.height * 3
-    );
+    this.bgUpdater = new BGUpdater(this, "bg_tileset");
+
+    
     // this.main_tile_plate.setOrigin(0);
 
     this.fixed_plate = this.textures.addDynamicTexture(
@@ -56,57 +56,61 @@ class Example extends Phaser.Scene {
       this.game.config.height
     );
 
-    console.log("this.game.config.height*3 :>> ", this.game.config.height * 3);
+    // console.log("this.game.config.height*3 :>> ", this.game.config.height * 3);
 
-    this.tls_txture = this.textures.get("tls");
+    // this.tls_txture = this.textures.get("tls");
     // console.log('this.tls_txture :>> ', this.tls_txture);
-    this.tileArr = getTileArrayFromTileset(this.tls_txture, 32);
+    // this.tileArr = getTileArrayFromTileset(this.tls_txture, 32);
 
-    this.screenTilesArrays = []; //This will hold actual tiles to be drawn on the screen
+    // this.screenTilesArrays = []; //This will hold actual tiles to be drawn on the screen
 
-    var scr1 = fillArray(50);
-    this.screenTilesArrays.push(scr1);
+    // var scr1 = fillArray(50);
+    // this.screenTilesArrays.push(scr1);
 
-    var scr2 = fillArray(56);
-    this.screenTilesArrays.push(scr2);
+    // var scr2 = fillArray(56);
+    // this.screenTilesArrays.push(scr2);
 
-    var scr3 = fillArray(42);
-    // var scr3 = this.fillArray(43);
-    this.screenTilesArrays.push(scr3);
+    // var scr3 = fillArray(42);
+    // // var scr3 = this.fillArray(43);
+    // this.screenTilesArrays.push(scr3);
 
     console.log("this.SCENE_ROW_NO :>> ", SCENE_ROW_NO);
     console.log("this.SCENE_ROW_LEN :>> ", SCENE_ROW_LEN);
     console.log("this.game.config.height :>> ", this.game.config.height);
     console.log("this.game.config.width :>> ", this.game.config.width);
 
-    for (var scr = 0; scr < this.screenTilesArrays.length; scr++) {
-      for (var y = 0; y < SCENE_ROW_NO; y++) {
-        for (var x = 0; x < SCENE_ROW_LEN; x++) {
-          // console.log('this.screenTilesArrays :>> ', this.screenTilesArrays);
-          // console.log('this.tileArr :>> ', this.tileArr);
-          this.main_tile_plate.draw(
-            this.tileArr[this.screenTilesArrays[scr][y][x]],
-            x * 32,
-            y * 32 + scr * this.game.config.height
-          );
-          // console.log('(y)*32+scr*this.game.config.height :>> ', (y)*32+scr*this.game.config.height);
-          // console.log('this.screenTilesArrays[scr][y][x] :>> ', this.screenTilesArrays[scr][y][x]);
-        }
-      }
-    }
-    this.cameras.main.scrollY = this.game.config.height * 2;
+    // for (var scr = 0; scr < this.screenTilesArrays.length; scr++) {
+    //   for (var y = 0; y < SCENE_ROW_NO; y++) {
+    //     for (var x = 0; x < SCENE_ROW_LEN; x++) {
+    //       // console.log('this.screenTilesArrays :>> ', this.screenTilesArrays);
+    //       // console.log('this.tileArr :>> ', this.tileArr);
+    //       this.main_tile_plate.draw(
+    //         this.tileArr[this.screenTilesArrays[scr][y][x]],
+    //         x * 32,
+    //         y * 32 + scr * this.game.config.height
+    //       );
+    //       // console.log('(y)*32+scr*this.game.config.height :>> ', (y)*32+scr*this.game.config.height);
+    //       // console.log('this.screenTilesArrays[scr][y][x] :>> ', this.screenTilesArrays[scr][y][x]);
+    //     }
+    //   }
+    // }
+    // this.cameras.main.scrollY = this.game.config.height*4;
+    this.cameras.main.scrollY = this.game.config.height;
+    // this.cameras.main.y = 0;
+    // this.cameras.main.scrollX = 0;
 
-    this.add.image(
-      this.game.config.width / 2,
-      this.game.config.height * 1.5,
-      this.main_tile_plate
-    );
+
+    // this.add.image(
+    //   this.game.config.width / 2,
+    //   this.game.config.height * 1.5,
+    //   this.main_tile_plate
+    // );
 
     this.fixed_plate_img = this.add
       .image(0, this.game.config.height, this.fixed_plate)
       .setOrigin(0);
 
-    this.fixed_plate_img.y = this.game.config.height * 2;
+    this.fixed_plate_img.y = this.game.config.height;
     console.log("this.fixed_plate_img :>> ", this.fixed_plate_img);
 
     this.towerDefenceTileTexture = this.textures.get("tower_defence_tileset");
@@ -115,27 +119,27 @@ class Example extends Phaser.Scene {
       64
     );
 
-    console.log("this.tileArr[1] :>> ", this.tileArr[1]);
-    console.log(
-      "this.towerDefenceTileArray[270] :>> ",
-      this.towerDefenceTileArray[276]
-    );
+    // console.log("this.tileArr[1] :>> ", this.tileArr[1]);
+    // console.log(
+    //   "this.towerDefenceTileArray[270] :>> ",
+    //   this.towerDefenceTileArray[276]
+    // );
 
     this.add.image(1200, 1200, this.towerDefenceTileTexture);
 
-    this.add.image(100, 100, this.tileArr[1]);
+    // this.add.image(100, 100, this.tileArr[1]);
 
-    for (var i = 0; i < 10; i++) {
-      // console.log(
-      //   "this.towerDefenceTileArray[i] :>> ",
-      //   this.towerDefenceTileArray[i]
-      // );
-      this.main_tile_plate.draw(
-        this.towerDefenceTileArray[276 + i],
-        i * 64,
-        200
-      );
-    }
+    // for (var i = 0; i < 10; i++) {
+    //   // console.log(
+    //   //   "this.towerDefenceTileArray[i] :>> ",
+    //   //   this.towerDefenceTileArray[i]
+    //   // );
+    //   this.main_tile_plate.draw(
+    //     this.towerDefenceTileArray[276 + i],
+    //     i * 64,
+    //     200
+    //   );
+    // }
     this.airplane_sprite = this.add
       .sprite(
         50,
@@ -147,10 +151,10 @@ class Example extends Phaser.Scene {
     this.airplane_sprite.angle = -90;
     this.airplane_sprite.y = this.game.config.height*2 +200;
 
-    this.text = this.add.text(10, 10, "Move the mouse", {
+    this.text = this.add.text(20, 20, "Move the mouse", {
       font: "16px Courier",
       fill: "#000000",
-    });
+    }).setOrigin(0);
     this.text.setText(["This is debug text"]);
 
     //Cursor keys:https://github.com/phaserjs/examples/blob/master/public/src/input/keyboard/cursor%20keys.js
@@ -316,14 +320,14 @@ class Example extends Phaser.Scene {
       this.fixed_plate.endDraw();
     }
 
-    this.cameras.main.scrollY -= 4;
-    this.fixed_plate_img.y -= 4;
-    this.airplane_sprite.y -= 4;
+    this.cameras.main.scrollY -= CAMERA_SCROLL_DELTA;
+    this.fixed_plate_img.y -= CAMERA_SCROLL_DELTA;
+    this.airplane_sprite.y -= CAMERA_SCROLL_DELTA;
 
-    if (this.cameras.main.scrollY <= 0) {
-      this.cameras.main.scrollY = this.game.config.height * 2;
-      this.fixed_plate_img.y = this.game.config.height * 2;
-      this.airplane_sprite.y = this.game.config.height*2 +200;
+    if (this.cameras.main.scrollY <=0 ) {
+      this.cameras.main.scrollY = this.game.config.height;
+      this.fixed_plate_img.y = this.game.config.height;
+      this.airplane_sprite.y = this.game.config.height +200;
     }
     // For copying parts of texture look into: https://photonstorm.github.io/phaser3-docs/Phaser.GameObjects.Blitter.html
     // https://photonstorm.github.io/phaser3-docs/Phaser.GameObjects.GameObjectFactory.html#blitter__anchor
