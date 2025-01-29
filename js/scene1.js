@@ -1,5 +1,5 @@
 window.addEventListener("load", () => {
-  console.log("I am loaded :>> ");
+  // console.log("I am loaded :>> ");
   document
     .getElementById("phaser-game-parent")
     .addEventListener("focusout", () => {
@@ -11,16 +11,11 @@ class FlyerScene extends Phaser.Scene {
   //Example from: https://phaser.io/examples/v3/view/game-objects/render-texture/graphics-to-render-texture
   rt;
   tls_txture;
-  // frm1;
-  // img1;
-  // i = 0;
   tileArr;
   towerDefenceTileTexture;
   towerDefenceTileArray;
-  // main_tile_plate;
   fixed_plate;
   fixed_plate_img;
-  // screenTilesArrays;
 
   airplane_sprite;
 
@@ -47,21 +42,12 @@ class FlyerScene extends Phaser.Scene {
 
   create() {
     this.cycleNo = 0;
-
-    
-
     this.bgUpdater = new BGUpdater(this, "bg_tileset");
-
-    
-    // this.main_tile_plate.setOrigin(0);
-
     this.fixed_plate = this.textures.addDynamicTexture(
       "fixedTexture",
       this.game.config.width,
       this.game.config.height
     );
-
-    
     console.log("this.SCENE_ROW_NO :>> ", SCENE_ROW_NO);
     console.log("this.SCENE_ROW_LEN :>> ", SCENE_ROW_LEN);
     console.log("this.game.config.height :>> ", this.game.config.height);
@@ -76,35 +62,14 @@ class FlyerScene extends Phaser.Scene {
       .setOrigin(0);
 
     this.fixed_plate_img.y = this.game.config.height;
-    console.log("this.fixed_plate_img :>> ", this.fixed_plate_img);
 
     this.towerDefenceTileTexture = this.textures.get("tower_defence_tileset");
     this.towerDefenceTileArray = getTileArrayFromTileset(
       this.towerDefenceTileTexture,
       64
     );
+    // this.add.image(1200, 1200, this.towerDefenceTileTexture);
 
-    // console.log("this.tileArr[1] :>> ", this.tileArr[1]);
-    // console.log(
-    //   "this.towerDefenceTileArray[270] :>> ",
-    //   this.towerDefenceTileArray[276]
-    // );
-
-    this.add.image(1200, 1200, this.towerDefenceTileTexture);
-
-    // this.add.image(100, 100, this.tileArr[1]);
-
-    // for (var i = 0; i < 10; i++) {
-    //   // console.log(
-    //   //   "this.towerDefenceTileArray[i] :>> ",
-    //   //   this.towerDefenceTileArray[i]
-    //   // );
-    //   this.main_tile_plate.draw(
-    //     this.towerDefenceTileArray[276 + i],
-    //     i * 64,
-    //     200
-    //   );
-    // }
     this.airplane_sprite = this.add
       .sprite(
         50,
@@ -114,7 +79,7 @@ class FlyerScene extends Phaser.Scene {
       )
       .setOrigin(0.5);
     this.airplane_sprite.angle = -90;
-    this.airplane_sprite.y = this.game.config.height*2 +200;
+    this.airplane_sprite.y = this.game.config.height +200;
 
     this.dbgText = this.add.text(20, 20, "Move the mouse", {
       font: "16px Courier",
@@ -234,10 +199,7 @@ class FlyerScene extends Phaser.Scene {
     while (digitArr.length < 5) {
       digitArr.push(0);
     }
-    // digitArr.push(num)
-    // if (digitArr.length == 0) {
 
-    // }
     digitArr.reverse();
 
     var i = 0;
@@ -257,10 +219,14 @@ class FlyerScene extends Phaser.Scene {
   update() {
     this.cycleNo += 1;
     if (this.cycleNo > 1000) this.cycleNo = 0;
+    this.airplane_sprite.scaleY = 1;
+    this.airplane_sprite.angle = -90;
 
     if (this.left_key.isDown) {
       console.log("left isdown :>> ");
       this.airplane_sprite.x = this.airplane_sprite.x - 2;
+      // this.airplane_sprite.scaleY = 0.5;
+      this.airplane_sprite.angle = -100;
     }
 
     if (this.right_key.isDown) {
@@ -290,6 +256,7 @@ class FlyerScene extends Phaser.Scene {
     this.airplane_sprite.y -= CAMERA_SCROLL_DELTA;
     this.dbgText.y = 20 + this.cameras.main.scrollY;
     this.dbgText.setText(`Hello ${this.cycleNo}`)
+    this.bgUpdater.update(this.cameras.main.scrollY)
 
     if (this.cameras.main.scrollY <=0 ) {
       this.cameras.main.scrollY = this.game.config.height;

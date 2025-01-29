@@ -19,18 +19,18 @@ function fillArray(tileID) {
 
   function getTileArrayFromTileset(set_texture, tileWidth) {
     // this.tls_txture.getSourceImage().width
-    console.log('set_texture.getSourceImage().width :>> ', set_texture.getSourceImage().width);
+    // console.log('set_texture.getSourceImage().width :>> ', set_texture.getSourceImage().width);
     var row_len = set_texture.getSourceImage().width / tileWidth;
-    console.log(" row_len :>> ", row_len);
+    // console.log(" row_len :>> ", row_len);
     var no_rows = set_texture.getSourceImage().height / tileWidth;
-    console.log("no_rows :>> ", no_rows);
+    // console.log("no_rows :>> ", no_rows);
 
     //Populate tiles array
     var tileArr = [];
 
     var i = 0;
     for (var y = 0; y < no_rows; y++) {
-      console.log('New line :>> ');
+      // console.log('New line :>> ');
       for (var x = 0; x < row_len; x++) {
         // console.log('i :>> ', i);
         var x_coord = x * tileWidth;
