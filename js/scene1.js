@@ -7,20 +7,20 @@ window.addEventListener("load", () => {
     });
 });
 
-class Example extends Phaser.Scene {
+class FlyerScene extends Phaser.Scene {
   //Example from: https://phaser.io/examples/v3/view/game-objects/render-texture/graphics-to-render-texture
   rt;
   tls_txture;
-  frm1;
-  img1;
-  i = 0;
+  // frm1;
+  // img1;
+  // i = 0;
   tileArr;
   towerDefenceTileTexture;
   towerDefenceTileArray;
-  main_tile_plate;
+  // main_tile_plate;
   fixed_plate;
   fixed_plate_img;
-  screenTilesArrays;
+  // screenTilesArrays;
 
   airplane_sprite;
 
@@ -31,6 +31,7 @@ class Example extends Phaser.Scene {
   cycleNo;
 
   bgUpdater = null;
+  dbgText = null;
 
   preload() {
     this.load.image("bg1", "img/red.png");
@@ -70,10 +71,6 @@ class Example extends Phaser.Scene {
     this.cameras.main.scrollY = this.game.config.height;
     // this.cameras.main.y = 0;
     // this.cameras.main.scrollX = 0;
-
-
-    
-
     this.fixed_plate_img = this.add
       .image(0, this.game.config.height, this.fixed_plate)
       .setOrigin(0);
@@ -119,11 +116,11 @@ class Example extends Phaser.Scene {
     this.airplane_sprite.angle = -90;
     this.airplane_sprite.y = this.game.config.height*2 +200;
 
-    this.text = this.add.text(20, 20, "Move the mouse", {
+    this.dbgText = this.add.text(20, 20, "Move the mouse", {
       font: "16px Courier",
       fill: "#000000",
     }).setOrigin(0);
-    this.text.setText(["This is debug text"]);
+    this.dbgText.setText(["This is debug text"]);
 
     //Cursor keys:https://github.com/phaserjs/examples/blob/master/public/src/input/keyboard/cursor%20keys.js
     // this.cursors = this.input.keyboard.createCursorKeys();
@@ -291,6 +288,8 @@ class Example extends Phaser.Scene {
     this.cameras.main.scrollY -= CAMERA_SCROLL_DELTA;
     this.fixed_plate_img.y -= CAMERA_SCROLL_DELTA;
     this.airplane_sprite.y -= CAMERA_SCROLL_DELTA;
+    this.dbgText.y = 20 + this.cameras.main.scrollY;
+    this.dbgText.setText(`Hello ${this.cycleNo}`)
 
     if (this.cameras.main.scrollY <=0 ) {
       this.cameras.main.scrollY = this.game.config.height;
