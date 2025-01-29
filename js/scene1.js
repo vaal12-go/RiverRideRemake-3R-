@@ -40,10 +40,14 @@ class Example extends Phaser.Scene {
     this.load.audio("gunShot", [
       "audio/Beefy-AR10-7.62x51-308-Close-Single-Gunshot-B.mp3",
     ]);
+    //https://medium.com/@michaelwesthadley/modular-game-worlds-in-phaser-3-tilemaps-1-958fc7e6bbd6
+    this.load.tilemapCSV("startingMap", "../tilemaps/flyer_starting map_29Jan2025._BGLayer1.csv");
   }
 
   create() {
     this.cycleNo = 0;
+
+    
 
     this.bgUpdater = new BGUpdater(this, "bg_tileset");
 
@@ -56,55 +60,19 @@ class Example extends Phaser.Scene {
       this.game.config.height
     );
 
-    // console.log("this.game.config.height*3 :>> ", this.game.config.height * 3);
-
-    // this.tls_txture = this.textures.get("tls");
-    // console.log('this.tls_txture :>> ', this.tls_txture);
-    // this.tileArr = getTileArrayFromTileset(this.tls_txture, 32);
-
-    // this.screenTilesArrays = []; //This will hold actual tiles to be drawn on the screen
-
-    // var scr1 = fillArray(50);
-    // this.screenTilesArrays.push(scr1);
-
-    // var scr2 = fillArray(56);
-    // this.screenTilesArrays.push(scr2);
-
-    // var scr3 = fillArray(42);
-    // // var scr3 = this.fillArray(43);
-    // this.screenTilesArrays.push(scr3);
-
+    
     console.log("this.SCENE_ROW_NO :>> ", SCENE_ROW_NO);
     console.log("this.SCENE_ROW_LEN :>> ", SCENE_ROW_LEN);
     console.log("this.game.config.height :>> ", this.game.config.height);
     console.log("this.game.config.width :>> ", this.game.config.width);
 
-    // for (var scr = 0; scr < this.screenTilesArrays.length; scr++) {
-    //   for (var y = 0; y < SCENE_ROW_NO; y++) {
-    //     for (var x = 0; x < SCENE_ROW_LEN; x++) {
-    //       // console.log('this.screenTilesArrays :>> ', this.screenTilesArrays);
-    //       // console.log('this.tileArr :>> ', this.tileArr);
-    //       this.main_tile_plate.draw(
-    //         this.tileArr[this.screenTilesArrays[scr][y][x]],
-    //         x * 32,
-    //         y * 32 + scr * this.game.config.height
-    //       );
-    //       // console.log('(y)*32+scr*this.game.config.height :>> ', (y)*32+scr*this.game.config.height);
-    //       // console.log('this.screenTilesArrays[scr][y][x] :>> ', this.screenTilesArrays[scr][y][x]);
-    //     }
-    //   }
-    // }
-    // this.cameras.main.scrollY = this.game.config.height*4;
+    
     this.cameras.main.scrollY = this.game.config.height;
     // this.cameras.main.y = 0;
     // this.cameras.main.scrollX = 0;
 
 
-    // this.add.image(
-    //   this.game.config.width / 2,
-    //   this.game.config.height * 1.5,
-    //   this.main_tile_plate
-    // );
+    
 
     this.fixed_plate_img = this.add
       .image(0, this.game.config.height, this.fixed_plate)
