@@ -24,7 +24,6 @@ class BGUpdater {
       this.scene.game.config.width,
       this.scene.game.config.height * 2
     );
-    //.setIsSpriteTexture(false)
 
     this.tempTexture = this.scene.textures
       .addDynamicTexture(
@@ -60,7 +59,7 @@ class BGUpdater {
     //Filling the shadow array from start tilemap
     // TODO: expand to two screens
     // console.log('SCENE_ROW_NO :>> ', SCENE_ROW_NO);
-    for (var rowNo = 0; rowNo < SCENE_ROW_NO; rowNo++) {
+    for (var rowNo = SCENE_ROW_NO-1; rowNo >=0 ; rowNo--) {
       //Filling 1st screen
       var newRowArr = [];
       for (var colNo = 0; colNo < SCENE_TILES_ROW_LEN; colNo++) {
@@ -71,7 +70,7 @@ class BGUpdater {
       }
       this.shadowScreenArray.push(newRowArr);
     } //for(var rowNo=0; rowNo<SCENE_ROW_NO; rowNo++) {
-    this.lastGeneratedShadowRow = this.shadowScreenArray[0];
+    this.lastGeneratedShadowRow = this.shadowScreenArray[this.shadowScreenArray.length-1];
 
     //Drawing shadow array on texture
     this.drawShadowArray();
@@ -90,16 +89,18 @@ class BGUpdater {
   drawShadowArray() {
     var shadowArrRows = this.shadowScreenArray.length;
     console.log("shadowArrRows :>> ", shadowArrRows);
-    for (var rowNo = shadowArrRows - 1; rowNo >= 0; rowNo--) {
+    for (var rowNo = 0; rowNo <shadowArrRows - 1; rowNo++) {
       for (var colNo = 0; colNo < SCENE_TILES_ROW_LEN; colNo++) {
         this.backgroundDynamicTexture.draw(
-          this.bgTilesArray[this.shadowScreenArray[rowNo][colNo]],
+          this.bgTilesArray[this.shadowScreenArray[0][colNo]],
           colNo * TILE_WIDTH_HEIGHT,
           this.scene.game.config.height * 2 -
             this.currentShadowArrayRowDrawn * TILE_WIDTH_HEIGHT
         );
       }
-      this.shadowScreenArray.splice(this.shadowScreenArray.length - 1, 1);
+    //   this.shadowScreenArray.splice(this.shadowScreenArray.length - 1, 1);
+    this.shadowScreenArray.splice(0, 1);
+
       this.currentShadowArrayRowDrawn++;
     } //for(var rowNo=0; rowNo<SCENE_ROW_NO; rowNo++) {
   } //drawShadowArray() {
@@ -139,7 +140,7 @@ class BGUpdater {
     }
     // console.log('leftRiverBank :>> ', leftRiverBank);
     var leftBankDecision = Math.floor(Math.random() * 4);
-    // console.log('leftBankDecision :>> ', leftBankDecision);
+    console.log("leftBankDecision :>> ", leftBankDecision);
     var newRow = [];
     //leave the bank as is case
     newRow = this.lastGeneratedShadowRow.slice(
@@ -149,8 +150,41 @@ class BGUpdater {
 
     switch (leftBankDecision) {
       case 0: //Widen left bank
+        newRow = this.lastGeneratedShadowRow.slice(
+          0,
+          leftRiverBank-1
+        );
+        newRow.push(52);
+        newRow.push(39);
+        var remainingTilesToCopy = SCENE_TILES_ROW_LEN - leftRiverBank;
+
+        console.log('leftRiverBank :>> ', leftRiverBank);
+        console.log('remainingTilesToCopy :>> ', remainingTilesToCopy);
+        var slicedArr = this.lastGeneratedShadowRow.slice(
+            leftRiverBank+1,
+            leftRiverBank+remainingTilesToCopy
+          ); 
+        console.log('slicedArr :>> ', slicedArr);
+        newRow.push(...slicedArr);
+        console.log('newRow widened :>> ', newRow);
+        this.shadowScreenArray.push(newRow);
+
+        newRow = newRow = this.lastGeneratedShadowRow.slice(
+            0,
+            leftRiverBank-1
+          );
+        newRow.push(51);
+        newRow.push(42);
+        newRow.push(...slicedArr);
+         
+
         break;
       case 1: //Leave the bank as is
+        console.log("Should leave as is :>> ");
+        newRow = this.lastGeneratedShadowRow.slice(
+          0,
+          this.lastGeneratedShadowRow.length
+        );
         break;
       case 2: //Narrow the left bank
         break;
