@@ -46,31 +46,17 @@ class BGUpdater {
       tileHeight: 32,
     });
 
-    // for(var rowNo=0; rowNo<SCENE_ROW_NO; rowNo++) {//Filling 1st screen
-    //     var newRowArr2 = [];
-    //     for (var colNo=0; colNo<SCENE_TILES_ROW_LEN; colNo++) {
-    //         newRowArr2.push(42);
-    //     }
-    //     this.shadowScreenArray.push(newRowArr2);
-    // }//for(var rowNo=0; rowNo<SCENE_ROW_NO; rowNo++) {
-
-    // console.log('startingMap :>> ', startingMap);
-    // console.log('startingMap2.layer.data[0][0] :>> ', startingMap.layer.data[0][0].index);
     //Filling the shadow array from start tilemap
     // TODO: expand to two screens
-    // console.log('SCENE_ROW_NO :>> ', SCENE_ROW_NO);
-    for (var rowNo = SCENE_ROW_NO-1; rowNo >=0 ; rowNo--) {
-      //Filling 1st screen
+    for (var rowNo = SCENE_ROW_NO - 1; rowNo >= 0; rowNo--) {
       var newRowArr = [];
       for (var colNo = 0; colNo < SCENE_TILES_ROW_LEN; colNo++) {
-        // console.log('rowNo :>> ', rowNo);
-        // console.log('colNo :>> ', colNo);
-        // console.log('object :>> ', startingMap.layer.data[rowNo][colNo].index);
         newRowArr.push(startingMap.layer.data[rowNo][colNo].index);
       }
       this.shadowScreenArray.push(newRowArr);
     } //for(var rowNo=0; rowNo<SCENE_ROW_NO; rowNo++) {
-    this.lastGeneratedShadowRow = this.shadowScreenArray[this.shadowScreenArray.length-1];
+    this.lastGeneratedShadowRow =
+      this.shadowScreenArray[this.shadowScreenArray.length - 1];
 
     //Drawing shadow array on texture
     this.drawShadowArray();
@@ -89,7 +75,7 @@ class BGUpdater {
   drawShadowArray() {
     var shadowArrRows = this.shadowScreenArray.length;
     console.log("shadowArrRows :>> ", shadowArrRows);
-    for (var rowNo = 0; rowNo <shadowArrRows - 1; rowNo++) {
+    for (var rowNo = 0; rowNo < shadowArrRows - 1; rowNo++) {
       for (var colNo = 0; colNo < SCENE_TILES_ROW_LEN; colNo++) {
         this.backgroundDynamicTexture.draw(
           this.bgTilesArray[this.shadowScreenArray[0][colNo]],
@@ -98,8 +84,8 @@ class BGUpdater {
             this.currentShadowArrayRowDrawn * TILE_WIDTH_HEIGHT
         );
       }
-    //   this.shadowScreenArray.splice(this.shadowScreenArray.length - 1, 1);
-    this.shadowScreenArray.splice(0, 1);
+      //   this.shadowScreenArray.splice(this.shadowScreenArray.length - 1, 1);
+      this.shadowScreenArray.splice(0, 1);
 
       this.currentShadowArrayRowDrawn++;
     } //for(var rowNo=0; rowNo<SCENE_ROW_NO; rowNo++) {
@@ -126,11 +112,7 @@ class BGUpdater {
   } //update(cameraPosition) {
 
   generateNextRiverSections() {
-    // console.log('generateNextRiverSections :>> ');
-    // console.log('this.shadowScreenArray :>> ', this.shadowScreenArray);
     var leftRiverBank = -1;
-    // var lastShadowRowArr = this.shadowScreenArray[this.shadowScreenArray.length-1];
-    // console.log('this.lastGeneratedShadowRow :>> ', this.lastGeneratedShadowRow);
 
     for (var i = 0; i < SCENE_TILES_ROW_LEN; i++) {
       if (this.lastGeneratedShadowRow[i] == 51) {
@@ -150,33 +132,27 @@ class BGUpdater {
 
     switch (leftBankDecision) {
       case 0: //Widen left bank
-        newRow = this.lastGeneratedShadowRow.slice(
-          0,
-          leftRiverBank-1
+        // console.log("Testing  replaceValuesInArray:>> ");
+        // console.log(
+        //   "this.lastGeneratedShadowRow :>> ",
+        //   this.lastGeneratedShadowRow
+        // );
+        var newRow = replaceValuesInArray(
+          this.lastGeneratedShadowRow,
+          leftRiverBank - 1,
+          52,
+          39
         );
-        newRow.push(52);
-        newRow.push(39);
-        var remainingTilesToCopy = SCENE_TILES_ROW_LEN - leftRiverBank;
-
-        console.log('leftRiverBank :>> ', leftRiverBank);
-        console.log('remainingTilesToCopy :>> ', remainingTilesToCopy);
-        var slicedArr = this.lastGeneratedShadowRow.slice(
-            leftRiverBank+1,
-            leftRiverBank+remainingTilesToCopy
-          ); 
-        console.log('slicedArr :>> ', slicedArr);
-        newRow.push(...slicedArr);
-        console.log('newRow widened :>> ', newRow);
+        // console.log("newRow :>> ", newRow);
         this.shadowScreenArray.push(newRow);
 
-        newRow = newRow = this.lastGeneratedShadowRow.slice(
-            0,
-            leftRiverBank-1
-          );
-        newRow.push(51);
-        newRow.push(42);
-        newRow.push(...slicedArr);
-         
+        newRow = replaceValuesInArray(
+          this.lastGeneratedShadowRow,
+          leftRiverBank - 1,
+          51,
+          42
+        );
+        // console.log("newRow :>> ", newRow);
 
         break;
       case 1: //Leave the bank as is
