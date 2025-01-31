@@ -113,10 +113,14 @@ class BGUpdater {
 
   generateNextRiverSections() {
     var leftRiverBank = -1;
+    var rightRiverBank = -1;
 
     for (var i = 0; i < SCENE_TILES_ROW_LEN; i++) {
       if (this.lastGeneratedShadowRow[i] == 51) {
         leftRiverBank = i;
+      }
+      if(this.lastGeneratedShadowRow[i] == 49) {
+        rightRiverBank = i;
         break;
       }
     }
@@ -132,6 +136,9 @@ class BGUpdater {
 
     switch (leftBankDecision) {
       case 0: //Widen left bank
+        if(leftRiverBank<=1) {
+          break; 
+        }//if(leftRiverBank>1) {
         // console.log("Testing  replaceValuesInArray:>> ");
         // console.log(
         //   "this.lastGeneratedShadowRow :>> ",
@@ -155,6 +162,7 @@ class BGUpdater {
         // console.log("newRow :>> ", newRow);
 
         break;
+        //END case 0: //Widen left bank
       case 1: //Leave the bank as is
         console.log("Should leave as is :>> ");
         newRow = this.lastGeneratedShadowRow.slice(
@@ -163,6 +171,25 @@ class BGUpdater {
         );
         break;
       case 2: //Narrow the left bank
+        if(leftRiverBank>=(rightRiverBank-2)) {
+          break;
+        }
+        var newRow = replaceValuesInArray(
+          this.lastGeneratedShadowRow,
+          leftRiverBank,
+          40,
+          63
+        );
+        // console.log("newRow :>> ", newRow);
+        this.shadowScreenArray.push(newRow);
+
+        newRow = replaceValuesInArray(
+          this.lastGeneratedShadowRow,
+          leftRiverBank,
+          50,
+          51
+        );
+
         break;
     } //switch(leftBankDecision) {
 

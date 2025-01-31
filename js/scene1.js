@@ -23,37 +23,50 @@ class FlyerScene extends Phaser.Scene {
   left_key;
   right_key;
   space_key;
+  pause_key;
+  game_paused = false;
   cycleNo;
 
   bgUpdater = null;
+  dashboard = null;
   dbgText = null;
+
+  positionalUpdatedObjectsArray = []; //All should have method update(cameraPosition)
 
   preload() {
     this.load.image("bg1", "img/red.png");
     this.load.image("ybg", "img/yellow_bg.png");
     this.load.image("bg_tileset", "img/tiles_packed_32.png");
     this.load.image("tower_defence_tileset", "img/towerDefense_tilesheet.png");
+    this.load.image("fuel_gauge", "img/FuelGauge.png");
     this.load.audio("gunShot", [
       "audio/Beefy-AR10-7.62x51-308-Close-Single-Gunshot-B.mp3",
     ]);
     //https://medium.com/@michaelwesthadley/modular-game-worlds-in-phaser-3-tilemaps-1-958fc7e6bbd6
-    this.load.tilemapCSV("startingMap", "../tilemaps/flyer_starting map_29Jan2025._BGLayer1.csv");
+    this.load.tilemapCSV(
+      "startingMap",
+      "../tilemaps/flyer_starting map_29Jan2025._BGLayer1.csv"
+    );
   }
 
   create() {
     this.cycleNo = 0;
     this.bgUpdater = new BGUpdater(this, "bg_tileset");
+    this.positionalUpdatedObjectsArray.push(this.bgUpdater);
     this.fixed_plate = this.textures.addDynamicTexture(
       "fixedTexture",
       this.game.config.width,
       this.game.config.height
     );
+
+    this.dashboard = new Dashboard(this);
+    this.positionalUpdatedObjectsArray.push(this.dashboard);
+
     console.log("this.SCENE_ROW_NO :>> ", SCENE_ROW_NO);
     console.log("this.SCENE_ROW_LEN :>> ", SCENE_ROW_LEN);
     console.log("this.game.config.height :>> ", this.game.config.height);
     console.log("this.game.config.width :>> ", this.game.config.width);
 
-    
     this.cameras.main.scrollY = this.game.config.height;
     // this.cameras.main.y = 0;
     // this.cameras.main.scrollX = 0;
@@ -79,12 +92,14 @@ class FlyerScene extends Phaser.Scene {
       )
       .setOrigin(0.5);
     this.airplane_sprite.angle = -90;
-    this.airplane_sprite.y = this.game.config.height +200;
+    this.airplane_sprite.y = this.game.config.height + 200;
 
-    this.dbgText = this.add.text(20, 20, "Move the mouse", {
-      font: "16px Courier",
-      fill: "#000000",
-    }).setOrigin(0);
+    this.dbgText = this.add
+      .text(20, 20, "Move the mouse", {
+        font: "16px Courier",
+        fill: "#000000",
+      })
+      .setOrigin(0);
     this.dbgText.setText(["This is debug text"]);
 
     //Cursor keys:https://github.com/phaserjs/examples/blob/master/public/src/input/keyboard/cursor%20keys.js
@@ -102,6 +117,18 @@ class FlyerScene extends Phaser.Scene {
     this.space_key = this.input.keyboard.addKey(
       Phaser.Input.Keyboard.KeyCodes.SPACE
     );
+    this.pause_key = this.input.keyboard.addKey(
+      Phaser.Input.Keyboard.KeyCodes.NUMPAD_ADD
+    );
+
+    var sceneObj = this;
+    this.pause_key.on("up", function (event) {
+      console.log("key up :>> ");
+      /* ... */
+      // if(this.pause_key.isDown) {
+      sceneObj.game_paused = !sceneObj.game_paused;
+      // }
+    });
 
     // Tileset example: https://phaser.io/examples/v3/view/tilemap/base-tile-size
     // this.tls_txture  = this.add
@@ -217,6 +244,10 @@ class FlyerScene extends Phaser.Scene {
   } //END drawNumber(number) {
 
   update() {
+    if (this.game_paused) {
+      return;
+    }
+
     this.cycleNo += 1;
     if (this.cycleNo > 1000) this.cycleNo = 0;
     this.airplane_sprite.scaleY = 1;
@@ -255,13 +286,17 @@ class FlyerScene extends Phaser.Scene {
     this.fixed_plate_img.y -= CAMERA_SCROLL_DELTA;
     this.airplane_sprite.y -= CAMERA_SCROLL_DELTA;
     this.dbgText.y = 20 + this.cameras.main.scrollY;
-    this.dbgText.setText(`Hello ${this.cycleNo}`)
-    this.bgUpdater.update(this.cameras.main.scrollY)
+    this.dbgText.setText(`Hello ${this.cycleNo}`);
 
-    if (this.cameras.main.scrollY <=0 ) {
+    for (let updObj of this.positionalUpdatedObjectsArray) {
+      updObj.update(this.cameras.main.scrollY);
+    }
+    // this.bgUpdater.update(this.cameras.main.scrollY)
+
+    if (this.cameras.main.scrollY <= 0) {
       this.cameras.main.scrollY = this.game.config.height;
       this.fixed_plate_img.y = this.game.config.height;
-      this.airplane_sprite.y = this.game.config.height +200;
+      this.airplane_sprite.y = this.game.config.height + 200;
     }
     // For copying parts of texture look into: https://photonstorm.github.io/phaser3-docs/Phaser.GameObjects.Blitter.html
     // https://photonstorm.github.io/phaser3-docs/Phaser.GameObjects.GameObjectFactory.html#blitter__anchor
