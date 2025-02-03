@@ -38,17 +38,21 @@ function getTileArrayFromTileset(set_texture, tileWidth) {
         )
       );
       i++;
-    }//for (var x = 0; x < row_len; x++) {
-  }//for (var y = 0; y < no_rows; y++) {
+    } //for (var x = 0; x < row_len; x++) {
+  } //for (var y = 0; y < no_rows; y++) {
   return tileArr;
 } //getTileArrayFromTileset(set_texture) {
 
 function replaceValuesInArray(oldArray, startPos, ...replacingValues) {
   var newArr = oldArray.slice();
 
-  for(let newVal of replacingValues) {
+  for (let newVal of replacingValues) {
     newArr[startPos] = newVal;
     startPos++;
   }
   return newArr;
+}
+
+function zeroFill(num, len) {
+  return (Array(len).join("0") + num).slice(-len);
 }

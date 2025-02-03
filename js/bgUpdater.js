@@ -40,6 +40,9 @@ class BGUpdater {
       TILE_WIDTH_HEIGHT
     );
 
+    var shMapHolder = new ShadowMapHolder(this.scene, "startingMap");
+    shMapHolder.debugPrintToConsole();
+
     const startingMap = this.scene.make.tilemap({
       key: "startingMap",
       tileWidth: 32,
@@ -47,7 +50,6 @@ class BGUpdater {
     });
 
     //Filling the shadow array from start tilemap
-    // TODO: expand to two screens
     for (var rowNo = SCENE_ROW_NO - 1; rowNo >= 0; rowNo--) {
       var newRowArr = [];
       for (var colNo = 0; colNo < SCENE_TILES_ROW_LEN; colNo++) {
@@ -119,7 +121,7 @@ class BGUpdater {
       if (this.lastGeneratedShadowRow[i] == 51) {
         leftRiverBank = i;
       }
-      if(this.lastGeneratedShadowRow[i] == 49) {
+      if (this.lastGeneratedShadowRow[i] == 49) {
         rightRiverBank = i;
         break;
       }
@@ -136,9 +138,9 @@ class BGUpdater {
 
     switch (leftBankDecision) {
       case 0: //Widen left bank
-        if(leftRiverBank<=1) {
-          break; 
-        }//if(leftRiverBank>1) {
+        if (leftRiverBank <= 1) {
+          break;
+        } //if(leftRiverBank>1) {
         // console.log("Testing  replaceValuesInArray:>> ");
         // console.log(
         //   "this.lastGeneratedShadowRow :>> ",
@@ -162,7 +164,7 @@ class BGUpdater {
         // console.log("newRow :>> ", newRow);
 
         break;
-        //END case 0: //Widen left bank
+      //END case 0: //Widen left bank
       case 1: //Leave the bank as is
         console.log("Should leave as is :>> ");
         newRow = this.lastGeneratedShadowRow.slice(
@@ -171,7 +173,7 @@ class BGUpdater {
         );
         break;
       case 2: //Narrow the left bank
-        if(leftRiverBank>=(rightRiverBank-2)) {
+        if (leftRiverBank >= rightRiverBank - 2) {
           break;
         }
         var newRow = replaceValuesInArray(

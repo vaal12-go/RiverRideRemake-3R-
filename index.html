@@ -7,10 +7,10 @@
     <script src="js/helpers.js"></script>
     <script src="js/bgUpdater.js"></script>
     <script src="js/dashboard.js"></script>
+    <script src="js/shadowMapHolder.js"></script>
     <script src="js/scene1.js"></script>
-    
   </head>
-  <body style="background-color: black;">
+  <body style="background-color: black">
     <script>
       window.onload = () => {
         const config = {
@@ -18,13 +18,13 @@
           width: 640, //20 tiles of 32px
           height: 864, //27 tiles of 32px
           scene: FlyerScene,
-          parent: "phaser-game-parent"
-        //   physics: {
-        //     default: "arcade",
-        //     arcade: {
-        //       gravity: { y: 200 },
-        //     },
-        //   },
+          parent: "phaser-game-parent",
+          //   physics: {
+          //     default: "arcade",
+          //     arcade: {
+          //       gravity: { y: 200 },
+          //     },
+          //   },
         };
 
         const game = new Phaser.Game(config);
@@ -32,7 +32,7 @@
     </script>
 
     <div>Above</div>
-    <div id="phaser-game-parent" style="background: #00f;"></div>
+    <div id="phaser-game-parent" style="background: #00f"></div>
     <div>below</div>
   </body>
 </html>
