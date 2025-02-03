@@ -47,6 +47,11 @@ class FlyerScene extends Phaser.Scene {
       "startingMap",
       "../tilemaps/flyer_starting map_29Jan2025._BGLayer1.csv"
     );
+    this.load.atlas(
+      "terrain_atlas",
+      "img/tiles_packed_32.png",
+      "img/terrain_sprites_atlas.json"
+    );
   }
 
   create() {
@@ -58,6 +63,7 @@ class FlyerScene extends Phaser.Scene {
       this.game.config.width,
       this.game.config.height
     );
+    const blitter = this.add.blitter(100, 1500, "terrain_atlas");
 
     this.dashboard = new Dashboard(this);
     this.positionalUpdatedObjectsArray.push(this.dashboard);
@@ -129,6 +135,12 @@ class FlyerScene extends Phaser.Scene {
       sceneObj.game_paused = !sceneObj.game_paused;
       // }
     });
+
+    const frame52 = this.textures.getFrame("terrain_atlas", "sprite52");
+    const frame53 = this.textures.getFrame("terrain_atlas", "sprite53");
+
+    blitter.create(0, 0, frame52);
+    blitter.create(100, 0, frame53);
 
     // Tileset example: https://phaser.io/examples/v3/view/tilemap/base-tile-size
     // this.tls_txture  = this.add
