@@ -1,5 +1,5 @@
 class BGUpdater {
-  backgroundDynamicTexture = null;
+  // backgroundDynamicTexture = null;
   bgTileSetName = "";
   bgTileSetTexture = null;
   bgTilesArray = null;
@@ -25,6 +25,7 @@ class BGUpdater {
 
   debugTextsArray = [];
   terrainBobsArray = [];
+  lowerScreenTerrainBobsArray = [];
 
   constructor(scene, backgroundTilesetName) {
     this.scene = scene;
@@ -91,15 +92,15 @@ class BGUpdater {
     //Drawing shadow array on texture
     this.drawShadowArray();
 
-    console.log("this.shadowScreenArray :>> ", this.shadowScreenArray);
-    this.generateNextRiverSections();
-    console.log("this.shadowScreenArray AFTER :>> ", this.shadowScreenArray);
-    this.drawShadowArray();
-    console.log("this.shadowScreenArray AFTER2 :>> ", this.shadowScreenArray);
-    this.generateNextRiverSections();
-    this.drawShadowArray();
+    // console.log("this.shadowScreenArray :>> ", this.shadowScreenArray);
+    // this.generateNextRiverSections();
+    // console.log("this.shadowScreenArray AFTER :>> ", this.shadowScreenArray);
+    // this.drawShadowArray();
+    // console.log("this.shadowScreenArray AFTER2 :>> ", this.shadowScreenArray);
+    // this.generateNextRiverSections();
+    // this.drawShadowArray();
 
-    scene.add.image(0, 0, this.backgroundDynamicTexture).setOrigin(0);
+    // scene.add.image(0, 0, this.backgroundDynamicTexture).setOrigin(0);
   } //constructor(scene, backgroundTilesetName) {
 
   drawShadowArray() {
@@ -203,31 +204,50 @@ class BGUpdater {
         );
         this.shadowMapFirstTilePositionOnScreen = lastRowVisible;
 
+        var prevShadowMapLen = this.shMapHolder.shadowMapArray.length;
         this.shMapHolder.generateNextRiverSections();
         console.log("Updated1 shadowmap :>> ");
         this.shMapHolder.debugPrintToConsole();
+
+        this.shadowArrayRowDrawn =
+          this.shadowArrayRowDrawn -
+          (this.shMapHolder.shadowMapArray.length - prevShadowMapLen);
+
+        this.drawShadowArray();
+
+        this.copyTopMostVisibleRowToBottomScreen(cameraPosition);
       } //if (lastRowVisible < this.shadowMapFirstTilePositionOnScreen) {
     } //else //if (lastRowVisible == SCENE_ROW_NO - 1) {
-
-    // if (cameraPosition == 0) {
-    //   console.log("Have restart of camera :>> ");
-    //   this.currentShadowArrayRowDrawn = SCENE_ROW_NO;
-
-    //   this.tempTexture.draw("BGUpdater_backgroundDynamicTexture", 0, 0);
-    //   this.backgroundDynamicTexture.draw(
-    //     "BGUpdater_backgroundDynamicTexture_temp",
-    //     0,
-    //     this.scene.game.config.height
-    //   );
-    // }
-    // if (cameraPosition % TILE_WIDTH_HEIGHT == 0) {
-    //   // console.log("cameraPosition reaches tiles boundary :>> ", cameraPosition);
-    //   this.generateNextRiverSections();
-    //   this.drawShadowArray();
-    // }
   } //update(cameraPosition) {
 
-  generateNextRiverSections() {
-    //Copied to shadowMapHolder
-  } //generateNextRiverSections() {
+  copyTopMostVisibleRowToBottomScreen(cameraPosition) {
+    console.log("copyTopMost.cameraPositio :>> ", cameraPosition);
+    var lastRowVisible = Math.floor(
+      (cameraPosition + this.scene.game.config.height - 1) / TILE_WIDTH_HEIGHT
+    );
+    console.log("copyTopMost.lastRowVisible :>> ", lastRowVisible);
+    var screenRowNo2Copy = lastRowVisible - SCENE_ROW_NO + 1;
+    console.log("copyTopMost.screenRowNo2Copy :>> ", screenRowNo2Copy);
+    console.log(
+      "copyTopMost.this.shadowArrayRowDrawn :>> ",
+      this.shadowArrayRowDrawn
+    );
+    var shadowArrayRowNo2Copy = 27;
+    var displayRowY = (lastRowVisible + 1) * TILE_WIDTH_HEIGHT;
+    console.log("displayRowY :>> ", displayRowY);
+    var terrainBobsRow = [];
+    for (var colNo = 0; colNo < SCENE_TILES_ROW_LEN; colNo++) {
+      var bob = this.terrainBlitter.create(
+        colNo * TILE_WIDTH_HEIGHT,
+        displayRowY,
+        this.framesArray[
+          this.shMapHolder.shadowMapArray[shadowArrayRowNo2Copy][colNo] + 1
+        ]
+      );
+      terrainBobsRow.push(bob);
+      // terrainBobsRow.push(bob);
+    } //for (var colNo = 0; colNo < SCENE_TILES_ROW_LEN; colNo++) {
+    this.lowerScreenTerrainBobsArray.push(terrainBobsRow);
+    // var shadowRowNo2Copy = screenRowNo2Copy
+  } //copyTopMostVisibleRowToBottomScreen(cameraPos) {
 } //class BGUpdater {
