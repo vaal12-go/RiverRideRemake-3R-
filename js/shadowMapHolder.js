@@ -21,9 +21,9 @@ class ShadowMapHolder {
   } //END constructor(startingTileSetName)
 
   debugPrintToConsole() {
-    var lineNo = 0;
-    for (let rowNo = 0; rowNo < this.shadowMapArray.length; rowNo++) {
-      var line2Print = zeroFill(lineNo, 2) + ": ";
+    // var lineNo = this.shadowMapArray.length-1;
+    for (let rowNo = this.shadowMapArray.length - 1; rowNo >= 0; rowNo--) {
+      var line2Print = zeroFill(rowNo, 2) + ": ";
       for (let colNo = 0; colNo < SCENE_TILES_ROW_LEN; colNo++) {
         var mapTile = this.shadowMapArray[rowNo][colNo];
         var outStr = zeroFill(mapTile, 2);
@@ -34,7 +34,6 @@ class ShadowMapHolder {
           case 51:
             outStr = "{";
             break;
-
           case 42:
             outStr = "~";
             break;
@@ -59,8 +58,9 @@ class ShadowMapHolder {
       }
 
       console.log("line2Print :>> ", line2Print);
-      lineNo++;
+      // lineNo++;
     }
+    console.log("shadowMapArray.length :>> ", this.shadowMapArray.length);
   } //END debugPrintToConsole() {
 
   generateNextRiverSections() {

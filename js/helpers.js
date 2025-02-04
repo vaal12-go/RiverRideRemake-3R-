@@ -60,7 +60,7 @@ function zeroFill(num, len) {
 function addTextToScene(scene, str, x, y, color = "#aaaaaa") {
   return scene.add
     .text(x, y, str, {
-      font: "16px Courier",
+      font: "14px Arial Narrow",
       fill: color,
     })
     .setOrigin(0);

@@ -15,6 +15,8 @@ class BGUpdater {
   tempTexture = null;
 
   shMapHolder = null;
+  shadowMapFirstTilePositionOnScreen = -1;
+
   terrainBlitter = null;
   bobsArray = [];
   framesArray = [null]; //sprite atlas starts from #1
@@ -22,11 +24,13 @@ class BGUpdater {
   shadowArrayRowDrawn = -1;
 
   debugTextsArray = [];
+  terrainBobsArray = [];
 
   constructor(scene, backgroundTilesetName) {
     this.scene = scene;
     this.currentCameraPosition = this.scene.game.config.height;
     this.currentShadowArrayRowDrawn = 0;
+    this.shadowMapFirstTilePositionOnScreen = SCENE_ROW_NO * 2 - 1;
 
     this.backgroundDynamicTexture = this.scene.textures.addDynamicTexture(
       "BGUpdater_backgroundDynamicTexture",
@@ -116,25 +120,30 @@ class BGUpdater {
       rowNo < shadowArrRows;
       rowNo++
     ) {
+      var terrainBobsRow = [];
       for (var colNo = 0; colNo < SCENE_TILES_ROW_LEN; colNo++) {
         var displayRowY =
           this.scene.game.config.height * 2 - (rowNo + 1) * TILE_WIDTH_HEIGHT;
-        console.log("displayRowY :>> ", displayRowY);
-        this.terrainBlitter.create(
+        // console.log("displayRowY :>> ", displayRowY);
+        var bob = this.terrainBlitter.create(
           colNo * TILE_WIDTH_HEIGHT,
           displayRowY,
           this.framesArray[this.shMapHolder.shadowMapArray[rowNo][colNo] + 1]
         );
+        terrainBobsRow.push(bob);
         this.debugTextsArray.push(
           addTextToScene(
             this.scene,
-            `ShadowRow:${rowNo}`,
+            `ShadowRow:${rowNo}. ScreenRow:${
+              this.shadowMapFirstTilePositionOnScreen - rowNo
+            }`,
             30,
             displayRowY,
-            "#ff0000"
+            "#ff000099"
           )
         );
-      }
+      } //for (var colNo = 0; colNo < SCENE_TILES_ROW_LEN; colNo++) {
+      this.terrainBobsArray.push(terrainBobsRow);
       this.shadowArrayRowDrawn++;
     } //for (var rowNo = this.shadowArrayRowDrawn + 1;
 
@@ -166,23 +175,56 @@ class BGUpdater {
   } //drawShadowArray() {
 
   update(cameraPosition) {
-    // console.log('cameraPosition :>> ', cameraPosition);
-    if (cameraPosition == 0) {
-      console.log("Have restart of camera :>> ");
-      this.currentShadowArrayRowDrawn = SCENE_ROW_NO;
+    console.log("update.cameraPosition :>> ", cameraPosition);
+    var lastRowVisible = Math.floor(
+      (cameraPosition + this.scene.game.config.height - 1) / TILE_WIDTH_HEIGHT
+    );
 
-      this.tempTexture.draw("BGUpdater_backgroundDynamicTexture", 0, 0);
-      this.backgroundDynamicTexture.draw(
-        "BGUpdater_backgroundDynamicTexture_temp",
-        0,
-        this.scene.game.config.height
-      );
-    }
-    if (cameraPosition % TILE_WIDTH_HEIGHT == 0) {
-      // console.log("cameraPosition reaches tiles boundary :>> ", cameraPosition);
-      this.generateNextRiverSections();
-      this.drawShadowArray();
-    }
+    console.log("update.lastRowVisible :>> ", lastRowVisible);
+    console.log(
+      "update.this.shadowMapFirstTilePositionOnScreen :>> ",
+      this.shadowMapFirstTilePositionOnScreen
+    );
+
+    console.log("this.terrainBobsArray :>> ", this.terrainBobsArray);
+
+    if (lastRowVisible == SCENE_ROW_NO - 1) {
+      console.log("This IS RESET of display :>> ");
+    } else {
+      if (lastRowVisible < this.shadowMapFirstTilePositionOnScreen) {
+        console.log("TILE BECOMES INVISIBLE :>> ");
+        for (var tileCol = 0; tileCol < SCENE_TILES_ROW_LEN; tileCol++) {
+          this.terrainBobsArray[0][tileCol].destroy();
+        }
+        this.terrainBobsArray.splice(0, 1);
+        console.log(
+          "this.terrainBobsArray AFTER REMOVAL:>> ",
+          this.terrainBobsArray
+        );
+        this.shadowMapFirstTilePositionOnScreen = lastRowVisible;
+
+        this.shMapHolder.generateNextRiverSections();
+        console.log("Updated1 shadowmap :>> ");
+        this.shMapHolder.debugPrintToConsole();
+      } //if (lastRowVisible < this.shadowMapFirstTilePositionOnScreen) {
+    } //else //if (lastRowVisible == SCENE_ROW_NO - 1) {
+
+    // if (cameraPosition == 0) {
+    //   console.log("Have restart of camera :>> ");
+    //   this.currentShadowArrayRowDrawn = SCENE_ROW_NO;
+
+    //   this.tempTexture.draw("BGUpdater_backgroundDynamicTexture", 0, 0);
+    //   this.backgroundDynamicTexture.draw(
+    //     "BGUpdater_backgroundDynamicTexture_temp",
+    //     0,
+    //     this.scene.game.config.height
+    //   );
+    // }
+    // if (cameraPosition % TILE_WIDTH_HEIGHT == 0) {
+    //   // console.log("cameraPosition reaches tiles boundary :>> ", cameraPosition);
+    //   this.generateNextRiverSections();
+    //   this.drawShadowArray();
+    // }
   } //update(cameraPosition) {
 
   generateNextRiverSections() {
