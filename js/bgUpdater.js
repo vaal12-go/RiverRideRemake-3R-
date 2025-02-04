@@ -14,6 +14,15 @@ class BGUpdater {
 
   tempTexture = null;
 
+  shMapHolder = null;
+  terrainBlitter = null;
+  bobsArray = [];
+  framesArray = [null]; //sprite atlas starts from #1
+
+  shadowArrayRowDrawn = -1;
+
+  debugTextsArray = [];
+
   constructor(scene, backgroundTilesetName) {
     this.scene = scene;
     this.currentCameraPosition = this.scene.game.config.height;
@@ -40,25 +49,40 @@ class BGUpdater {
       TILE_WIDTH_HEIGHT
     );
 
-    var shMapHolder = new ShadowMapHolder(this.scene, "startingMap");
-    shMapHolder.debugPrintToConsole();
+    this.terrainBlitter = this.scene.add.blitter(0, 0, "terrain_atlas");
+    //Creating bobs/frames:
 
-    const startingMap = this.scene.make.tilemap({
-      key: "startingMap",
-      tileWidth: 32,
-      tileHeight: 32,
-    });
+    for (let spriteNo = 1; spriteNo <= 120; spriteNo++) {
+      var newFrame = this.scene.textures.getFrame(
+        "terrain_atlas",
+        `sprite${spriteNo}`
+      );
+      this.framesArray.push(newFrame);
+    }
 
-    //Filling the shadow array from start tilemap
-    for (var rowNo = SCENE_ROW_NO - 1; rowNo >= 0; rowNo--) {
-      var newRowArr = [];
-      for (var colNo = 0; colNo < SCENE_TILES_ROW_LEN; colNo++) {
-        newRowArr.push(startingMap.layer.data[rowNo][colNo].index);
-      }
-      this.shadowScreenArray.push(newRowArr);
-    } //for(var rowNo=0; rowNo<SCENE_ROW_NO; rowNo++) {
-    this.lastGeneratedShadowRow =
-      this.shadowScreenArray[this.shadowScreenArray.length - 1];
+    this.shMapHolder = new ShadowMapHolder(this.scene, "startingMap");
+    console.log("Initial shadowmap :>> ");
+    this.shMapHolder.debugPrintToConsole();
+    this.shMapHolder.generateNextRiverSections();
+    console.log("Updated1 shadowmap :>> ");
+    this.shMapHolder.debugPrintToConsole();
+
+    // const startingMap = this.scene.make.tilemap({
+    //   key: "startingMap",
+    //   tileWidth: 32,
+    //   tileHeight: 32,
+    // });
+
+    // //Filling the shadow array from start tilemap
+    // for (var rowNo = SCENE_ROW_NO - 1; rowNo >= 0; rowNo--) {
+    //   var newRowArr = [];
+    //   for (var colNo = 0; colNo < SCENE_TILES_ROW_LEN; colNo++) {
+    //     newRowArr.push(startingMap.layer.data[rowNo][colNo].index);
+    //   }
+    //   this.shadowScreenArray.push(newRowArr);
+    // } //for(var rowNo=0; rowNo<SCENE_ROW_NO; rowNo++) {
+    // this.lastGeneratedShadowRow =
+    //   this.shadowScreenArray[this.shadowScreenArray.length - 1];
 
     //Drawing shadow array on texture
     this.drawShadowArray();
@@ -75,22 +99,70 @@ class BGUpdater {
   } //constructor(scene, backgroundTilesetName) {
 
   drawShadowArray() {
-    var shadowArrRows = this.shadowScreenArray.length;
-    console.log("shadowArrRows :>> ", shadowArrRows);
-    for (var rowNo = 0; rowNo < shadowArrRows - 1; rowNo++) {
+    console.log(
+      "drawShadowArray() START this.shadowArrayRowDrawn :>> ",
+      this.shadowArrayRowDrawn
+    );
+    var shadowArrRows = this.shMapHolder.shadowMapArray.length;
+
+    //If below is enabled it will clear all texts even if nothing is drawn
+    // for (var i = 0; i < this.debugTextsArray.length; i++) {
+    //   this.debugTextsArray[i].destroy();
+    // }
+    // this.debugTextsArray.splice(0);
+
+    for (
+      var rowNo = this.shadowArrayRowDrawn + 1;
+      rowNo < shadowArrRows;
+      rowNo++
+    ) {
       for (var colNo = 0; colNo < SCENE_TILES_ROW_LEN; colNo++) {
-        this.backgroundDynamicTexture.draw(
-          this.bgTilesArray[this.shadowScreenArray[0][colNo]],
+        var displayRowY =
+          this.scene.game.config.height * 2 - (rowNo + 1) * TILE_WIDTH_HEIGHT;
+        console.log("displayRowY :>> ", displayRowY);
+        this.terrainBlitter.create(
           colNo * TILE_WIDTH_HEIGHT,
-          this.scene.game.config.height * 2 -
-            this.currentShadowArrayRowDrawn * TILE_WIDTH_HEIGHT
+          displayRowY,
+          this.framesArray[this.shMapHolder.shadowMapArray[rowNo][colNo] + 1]
+        );
+        this.debugTextsArray.push(
+          addTextToScene(
+            this.scene,
+            `ShadowRow:${rowNo}`,
+            30,
+            displayRowY,
+            "#ff0000"
+          )
         );
       }
-      //   this.shadowScreenArray.splice(this.shadowScreenArray.length - 1, 1);
-      this.shadowScreenArray.splice(0, 1);
+      this.shadowArrayRowDrawn++;
+    } //for (var rowNo = this.shadowArrayRowDrawn + 1;
 
-      this.currentShadowArrayRowDrawn++;
-    } //for(var rowNo=0; rowNo<SCENE_ROW_NO; rowNo++) {
+    this.terrainBlitter.create(
+      0,
+      this.scene.game.config.height * 2,
+      this.framesArray[2]
+    );
+    console.log(
+      "this.scene.game.config.height * 2 - TILE_WIDTH_HEIGHT, :>> ",
+      this.scene.game.config.height * 2 - TILE_WIDTH_HEIGHT
+    );
+    this.terrainBlitter.create(
+      0,
+      this.scene.game.config.height * 2 - TILE_WIDTH_HEIGHT,
+      this.framesArray[2]
+    );
+    this.terrainBlitter.create(
+      0,
+      this.scene.game.config.height,
+      this.framesArray[2]
+    );
+    this.terrainBlitter.create(0, 0, this.framesArray[2]);
+
+    console.log(
+      "this.shadowArrayRowDrawn AFTER :>> ",
+      this.shadowArrayRowDrawn
+    );
   } //drawShadowArray() {
 
   update(cameraPosition) {
@@ -107,95 +179,13 @@ class BGUpdater {
       );
     }
     if (cameraPosition % TILE_WIDTH_HEIGHT == 0) {
-      console.log("cameraPosition reaches tiles boundary :>> ", cameraPosition);
+      // console.log("cameraPosition reaches tiles boundary :>> ", cameraPosition);
       this.generateNextRiverSections();
       this.drawShadowArray();
     }
   } //update(cameraPosition) {
 
   generateNextRiverSections() {
-    var leftRiverBank = -1;
-    var rightRiverBank = -1;
-
-    for (var i = 0; i < SCENE_TILES_ROW_LEN; i++) {
-      if (this.lastGeneratedShadowRow[i] == 51) {
-        leftRiverBank = i;
-      }
-      if (this.lastGeneratedShadowRow[i] == 49) {
-        rightRiverBank = i;
-        break;
-      }
-    }
-    // console.log('leftRiverBank :>> ', leftRiverBank);
-    var leftBankDecision = Math.floor(Math.random() * 4);
-    console.log("leftBankDecision :>> ", leftBankDecision);
-    var newRow = [];
-    //leave the bank as is case
-    newRow = this.lastGeneratedShadowRow.slice(
-      0,
-      this.lastGeneratedShadowRow.length
-    );
-
-    switch (leftBankDecision) {
-      case 0: //Widen left bank
-        if (leftRiverBank <= 1) {
-          break;
-        } //if(leftRiverBank>1) {
-        // console.log("Testing  replaceValuesInArray:>> ");
-        // console.log(
-        //   "this.lastGeneratedShadowRow :>> ",
-        //   this.lastGeneratedShadowRow
-        // );
-        var newRow = replaceValuesInArray(
-          this.lastGeneratedShadowRow,
-          leftRiverBank - 1,
-          52,
-          39
-        );
-        // console.log("newRow :>> ", newRow);
-        this.shadowScreenArray.push(newRow);
-
-        newRow = replaceValuesInArray(
-          this.lastGeneratedShadowRow,
-          leftRiverBank - 1,
-          51,
-          42
-        );
-        // console.log("newRow :>> ", newRow);
-
-        break;
-      //END case 0: //Widen left bank
-      case 1: //Leave the bank as is
-        console.log("Should leave as is :>> ");
-        newRow = this.lastGeneratedShadowRow.slice(
-          0,
-          this.lastGeneratedShadowRow.length
-        );
-        break;
-      case 2: //Narrow the left bank
-        if (leftRiverBank >= rightRiverBank - 2) {
-          break;
-        }
-        var newRow = replaceValuesInArray(
-          this.lastGeneratedShadowRow,
-          leftRiverBank,
-          40,
-          63
-        );
-        // console.log("newRow :>> ", newRow);
-        this.shadowScreenArray.push(newRow);
-
-        newRow = replaceValuesInArray(
-          this.lastGeneratedShadowRow,
-          leftRiverBank,
-          50,
-          51
-        );
-
-        break;
-    } //switch(leftBankDecision) {
-
-    this.shadowScreenArray.push(newRow);
-    this.lastGeneratedShadowRow = newRow;
+    //Copied to shadowMapHolder
   } //generateNextRiverSections() {
 } //class BGUpdater {

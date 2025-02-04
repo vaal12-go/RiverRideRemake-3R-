@@ -24,7 +24,10 @@ class FlyerScene extends Phaser.Scene {
   right_key;
   space_key;
   pause_key;
-  game_paused = false;
+  // game_paused = fals-e;
+  game_paused = true;
+  step_forward_key;
+  step_once = false;
   cycleNo;
 
   bgUpdater = null;
@@ -58,15 +61,15 @@ class FlyerScene extends Phaser.Scene {
     this.cycleNo = 0;
     this.bgUpdater = new BGUpdater(this, "bg_tileset");
     this.positionalUpdatedObjectsArray.push(this.bgUpdater);
-    this.fixed_plate = this.textures.addDynamicTexture(
-      "fixedTexture",
-      this.game.config.width,
-      this.game.config.height
-    );
+    // this.fixed_plate = this.textures.addDynamicTexture(
+    //   "fixedTexture",
+    //   this.game.config.width,
+    //   this.game.config.height
+    // );
     const blitter = this.add.blitter(100, 1500, "terrain_atlas");
 
-    this.dashboard = new Dashboard(this);
-    this.positionalUpdatedObjectsArray.push(this.dashboard);
+    // this.dashboard = new Dashboard(this);
+    // this.positionalUpdatedObjectsArray.push(this.dashboard);
 
     console.log("this.SCENE_ROW_NO :>> ", SCENE_ROW_NO);
     console.log("this.SCENE_ROW_LEN :>> ", SCENE_ROW_LEN);
@@ -126,21 +129,20 @@ class FlyerScene extends Phaser.Scene {
     this.pause_key = this.input.keyboard.addKey(
       Phaser.Input.Keyboard.KeyCodes.NUMPAD_ADD
     );
+    this.step_forward_key = this.input.keyboard.addKey(
+      Phaser.Input.Keyboard.KeyCodes.NUMPAD_SUBTRACT
+    );
 
     var sceneObj = this;
     this.pause_key.on("up", function (event) {
       console.log("key up :>> ");
-      /* ... */
-      // if(this.pause_key.isDown) {
       sceneObj.game_paused = !sceneObj.game_paused;
-      // }
     });
 
-    const frame52 = this.textures.getFrame("terrain_atlas", "sprite52");
-    const frame53 = this.textures.getFrame("terrain_atlas", "sprite53");
-
-    blitter.create(0, 0, frame52);
-    blitter.create(100, 0, frame53);
+    this.step_forward_key.on("up", function (event) {
+      console.log("Step key up :>> ");
+      sceneObj.step_once = true;
+    });
 
     // Tileset example: https://phaser.io/examples/v3/view/tilemap/base-tile-size
     // this.tls_txture  = this.add
@@ -203,27 +205,27 @@ class FlyerScene extends Phaser.Scene {
     }
   }
 
-  drawArrayToTexture(scrArr, textureStartY) {
-    this.main_tile_plate.beginDraw();
-    for (var y = 0; y < this.SCENE_ROW_NO; y++) {
-      for (var x = 0; x < this.SCENE_ROW_LEN; x++) {
-        //https://newdocs.phaser.io/docs/3.70.0/Phaser.Textures.DynamicTexture#batchDraw
-        this.main_tile_plate.batchDraw(
-          this.tileArr[scrArr[y][x]],
-          x * 32,
-          y * 32 + textureStartY
-        );
-        // this.main_tile_plate.draw(
-        //   this.tileArr[scrArr[y][x]],
-        //   x * 32,
-        //   y * 32 + textureStartY
-        // );
-        // console.log('(y)*32+scr*this.game.config.height :>> ', (y)*32+scr*this.game.config.height);
-        // console.log('this.screenTilesArrays[scr][x][y] :>> ', this.screenTilesArrays[scr][x][y]);
-      }
-    }
-    this.main_tile_plate.endDraw();
-  }
+  // drawArrayToTexture(scrArr, textureStartY) {
+  //   this.main_tile_plate.beginDraw();
+  //   for (var y = 0; y < this.SCENE_ROW_NO; y++) {
+  //     for (var x = 0; x < this.SCENE_ROW_LEN; x++) {
+  //       //https://newdocs.phaser.io/docs/3.70.0/Phaser.Textures.DynamicTexture#batchDraw
+  //       this.main_tile_plate.batchDraw(
+  //         this.tileArr[scrArr[y][x]],
+  //         x * 32,
+  //         y * 32 + textureStartY
+  //       );
+  //       // this.main_tile_plate.draw(
+  //       //   this.tileArr[scrArr[y][x]],
+  //       //   x * 32,
+  //       //   y * 32 + textureStartY
+  //       // );
+  //       // console.log('(y)*32+scr*this.game.config.height :>> ', (y)*32+scr*this.game.config.height);
+  //       // console.log('this.screenTilesArrays[scr][x][y] :>> ', this.screenTilesArrays[scr][x][y]);
+  //     }
+  //   }
+  //   this.main_tile_plate.endDraw();
+  // }
 
   drawNumber(number) {
     var num = number;
@@ -256,9 +258,18 @@ class FlyerScene extends Phaser.Scene {
   } //END drawNumber(number) {
 
   update() {
-    if (this.game_paused) {
+    if (this.game_paused && !this.step_once) {
       return;
     }
+
+    if (this.step_once) {
+      this.step_once = false;
+    }
+
+    console.log(
+      "this.cameras.main.scrollY BEFORE UPDATE :>> ",
+      this.cameras.main.scrollY
+    );
 
     this.cycleNo += 1;
     if (this.cycleNo > 1000) this.cycleNo = 0;
@@ -285,20 +296,24 @@ class FlyerScene extends Phaser.Scene {
       // this.airplane_sprite.y = this.airplane_sprite.x - 2
     }
 
-    if (this.cycleNo % 2 == 0) {
-      this.fixed_plate.beginDraw();
-      //TODO: this probably may be optimized with https://newdocs.phaser.io/docs/3.70.0/Phaser.Textures.DynamicTexture#fill
-      this.fixed_plate.clear(100, 500, 200, 100);
+    // if (this.cycleNo % 2 == 0) {
+    //   this.fixed_plate.beginDraw();
+    //   //TODO: this probably may be optimized with https://newdocs.phaser.io/docs/3.70.0/Phaser.Textures.DynamicTexture#fill
+    //   this.fixed_plate.clear(100, 500, 200, 100);
 
-      this.drawNumber(this.cycleNo);
-      this.fixed_plate.endDraw();
-    }
+    //   this.drawNumber(this.cycleNo);
+    //   this.fixed_plate.endDraw();
+    // }
 
     this.cameras.main.scrollY -= CAMERA_SCROLL_DELTA;
     this.fixed_plate_img.y -= CAMERA_SCROLL_DELTA;
     this.airplane_sprite.y -= CAMERA_SCROLL_DELTA;
     this.dbgText.y = 20 + this.cameras.main.scrollY;
     this.dbgText.setText(`Hello ${this.cycleNo}`);
+    console.log(
+      "this.cameras.main.scrollY AFTER+ UPDATE :>> ",
+      this.cameras.main.scrollY
+    );
 
     for (let updObj of this.positionalUpdatedObjectsArray) {
       updObj.update(this.cameras.main.scrollY);

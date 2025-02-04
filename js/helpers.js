@@ -56,3 +56,13 @@ function replaceValuesInArray(oldArray, startPos, ...replacingValues) {
 function zeroFill(num, len) {
   return (Array(len).join("0") + num).slice(-len);
 }
+
+function addTextToScene(scene, str, x, y, color = "#aaaaaa") {
+  return scene.add
+    .text(x, y, str, {
+      font: "16px Courier",
+      fill: color,
+    })
+    .setOrigin(0);
+  dbgText.setText([`#${i}`]);
+}
