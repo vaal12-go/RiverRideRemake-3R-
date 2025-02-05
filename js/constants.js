@@ -7,3 +7,5 @@ SCENE_TILES_ROW_LEN = 20; //Number of tiles in one row
 SCENE_ROWS_NO = 27; //Number of visible rows of tiles
 
 CAMERA_SCROLL_DELTA = 4;
+
+STARTING_TILEMAP = "startingMap";

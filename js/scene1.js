@@ -7,9 +7,6 @@ window.addEventListener("load", () => {
 });
 
 class FlyerScene extends Phaser.Scene {
-  // rt;
-  // tls_txture;
-  // tileArr;
   towerDefenceTileTexture;
   towerDefenceTileArray;
   fixed_plate;
@@ -46,7 +43,7 @@ class FlyerScene extends Phaser.Scene {
     ]);
     //https://medium.com/@michaelwesthadley/modular-game-worlds-in-phaser-3-tilemaps-1-958fc7e6bbd6
     this.load.tilemapCSV(
-      "startingMap",
+      STARTING_TILEMAP,
       "../tilemaps/flyer_starting map_29Jan2025._BGLayer1.csv"
     );
     this.load.atlas(
@@ -58,8 +55,6 @@ class FlyerScene extends Phaser.Scene {
 
   create() {
     this.cycleNo = 0;
-    // this.bgUpdater = new BGUpdater(this, "bg_tileset");
-    // this.positionalUpdatedObjectsArray.push(this.bgUpdater);
     this.terraPainter = new TerrainPainter(this);
     this.positionalUpdatedObjectsArray.push(this.terraPainter);
 
@@ -71,7 +66,7 @@ class FlyerScene extends Phaser.Scene {
     console.log("this.game.config.height :>> ", this.game.config.height);
     console.log("this.game.config.width :>> ", this.game.config.width);
 
-    this.cameras.main.scrollY = this.game.config.height;
+    this.cameras.main.scrollY = TILE_WIDTH_HEIGHT;
     // this.cameras.main.y = 0;
     // this.cameras.main.scrollX = 0;
     this.fixed_plate_img = this.add
@@ -95,7 +90,8 @@ class FlyerScene extends Phaser.Scene {
       )
       .setOrigin(0.5);
     this.airplane_sprite.angle = -90;
-    this.airplane_sprite.y = this.game.config.height + 200;
+    this.airplane_sprite.y = this.game.config.height - 150;
+    this.airplane_sprite.x = (this.game.config.width - 32) / 2;
 
     this.dbgText = this.add
       .text(20, 20, "Move the mouse", {
@@ -260,10 +256,10 @@ class FlyerScene extends Phaser.Scene {
       this.step_once = false;
     }
 
-    console.log(
-      "this.cameras.main.scrollY BEFORE UPDATE :>> ",
-      this.cameras.main.scrollY
-    );
+    // console.log(
+    //   "this.cameras.main.scrollY BEFORE UPDATE :>> ",
+    //   this.cameras.main.scrollY
+    // );
 
     this.cycleNo += 1;
     if (this.cycleNo > 1000) this.cycleNo = 0;
@@ -304,10 +300,10 @@ class FlyerScene extends Phaser.Scene {
     this.airplane_sprite.y -= CAMERA_SCROLL_DELTA;
     this.dbgText.y = 20 + this.cameras.main.scrollY;
     this.dbgText.setText(`Hello ${this.cycleNo}`);
-    console.log(
-      "this.cameras.main.scrollY AFTER+ UPDATE :>> ",
-      this.cameras.main.scrollY
-    );
+    // console.log(
+    //   "this.cameras.main.scrollY AFTER+ UPDATE :>> ",
+    //   this.cameras.main.scrollY
+    // );
 
     for (let updObj of this.positionalUpdatedObjectsArray) {
       updObj.update(this.cameras.main.scrollY);
@@ -315,9 +311,11 @@ class FlyerScene extends Phaser.Scene {
     // this.bgUpdater.update(this.cameras.main.scrollY)
 
     if (this.cameras.main.scrollY <= 0) {
-      this.cameras.main.scrollY = this.game.config.height;
+      // this.cameras.main.scrollY = this.game.config.height;
+      this.cameras.main.scrollY = TILE_WIDTH_HEIGHT;
       this.fixed_plate_img.y = this.game.config.height;
-      this.airplane_sprite.y = this.game.config.height + 200;
+      // this.airplane_sprite.y = this.game.config.height + 200;
+      this.airplane_sprite.y = this.game.config.height - 150;
     }
     // For copying parts of texture look into: https://photonstorm.github.io/phaser3-docs/Phaser.GameObjects.Blitter.html
     // https://photonstorm.github.io/phaser3-docs/Phaser.GameObjects.GameObjectFactory.html#blitter__anchor

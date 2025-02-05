@@ -2,10 +2,10 @@ class ShadowMapHolder {
   shadowMapArray = [];
   scene = null;
 
-  constructor(scene, startingTileMapName) {
+  constructor(scene) {
     this.scene = scene;
     const startingMap = this.scene.make.tilemap({
-      key: startingTileMapName,
+      key: STARTING_TILEMAP,
       tileWidth: TILE_WIDTH_HEIGHT,
       tileHeight: TILE_WIDTH_HEIGHT,
     });
@@ -19,6 +19,17 @@ class ShadowMapHolder {
       this.shadowMapArray.push(newRowArr);
     } //for(var rowNo=0; rowNo<SCENE_ROW_NO; rowNo++) {
   } //END constructor(startingTileSetName)
+
+  getShadowMap() {
+    while (this.shadowMapArray.length < SCENE_ROW_NO + 1) {
+      this.generateNextRiverSections();
+    }
+    return this.shadowMapArray.slice(0, SCENE_ROW_NO + 1);
+  }
+
+  removeBottomRow() {
+    this.shadowMapArray.splice(0, 1);
+  }
 
   debugPrintToConsole() {
     // var lineNo = this.shadowMapArray.length-1;
