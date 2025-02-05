@@ -1,18 +1,17 @@
 class BGUpdater {
-  // backgroundDynamicTexture = null;
   bgTileSetName = "";
   bgTileSetTexture = null;
   bgTilesArray = null;
 
-  shadowScreenArray = []; //This will hold tile numbers (2 screens)
+  // shadowScreenArray = []; //This will hold tile numbers (2 screens)
 
   scene = null;
   currentCameraPosition = -1;
   currentShadowArrayRowDrawn = -1;
 
-  lastGeneratedShadowRow = null;
+  // lastGeneratedShadowRow = null;
 
-  tempTexture = null;
+  // tempTexture = null;
 
   shMapHolder = null;
   shadowMapFirstTilePositionOnScreen = -1;
@@ -33,19 +32,19 @@ class BGUpdater {
     this.currentShadowArrayRowDrawn = 0;
     this.shadowMapFirstTilePositionOnScreen = SCENE_ROW_NO * 2 - 1;
 
-    this.backgroundDynamicTexture = this.scene.textures.addDynamicTexture(
-      "BGUpdater_backgroundDynamicTexture",
-      this.scene.game.config.width,
-      this.scene.game.config.height * 2
-    );
+    // this.backgroundDynamicTexture = this.scene.textures.addDynamicTexture(
+    //   "BGUpdater_backgroundDynamicTexture",
+    //   this.scene.game.config.width,
+    //   this.scene.game.config.height * 2
+    // );
 
-    this.tempTexture = this.scene.textures
-      .addDynamicTexture(
-        "BGUpdater_backgroundDynamicTexture_temp",
-        this.scene.game.config.width,
-        this.scene.game.config.height
-      )
-      .setIsSpriteTexture(false);
+    // this.tempTexture = this.scene.textures
+    //   .addDynamicTexture(
+    //     "BGUpdater_backgroundDynamicTexture_temp",
+    //     this.scene.game.config.width,
+    //     this.scene.game.config.height
+    //   )
+    //   .setIsSpriteTexture(false);
 
     this.bgTileSetName = backgroundTilesetName;
     this.bgTileSetTexture = this.scene.textures.get(this.bgTileSetName);
@@ -56,7 +55,6 @@ class BGUpdater {
 
     this.terrainBlitter = this.scene.add.blitter(0, 0, "terrain_atlas");
     //Creating bobs/frames:
-
     for (let spriteNo = 1; spriteNo <= 120; spriteNo++) {
       var newFrame = this.scene.textures.getFrame(
         "terrain_atlas",
@@ -72,36 +70,11 @@ class BGUpdater {
     console.log("Updated1 shadowmap :>> ");
     this.shMapHolder.debugPrintToConsole();
 
-    // const startingMap = this.scene.make.tilemap({
-    //   key: "startingMap",
-    //   tileWidth: 32,
-    //   tileHeight: 32,
-    // });
-
-    // //Filling the shadow array from start tilemap
-    // for (var rowNo = SCENE_ROW_NO - 1; rowNo >= 0; rowNo--) {
-    //   var newRowArr = [];
-    //   for (var colNo = 0; colNo < SCENE_TILES_ROW_LEN; colNo++) {
-    //     newRowArr.push(startingMap.layer.data[rowNo][colNo].index);
-    //   }
-    //   this.shadowScreenArray.push(newRowArr);
-    // } //for(var rowNo=0; rowNo<SCENE_ROW_NO; rowNo++) {
-    // this.lastGeneratedShadowRow =
-    //   this.shadowScreenArray[this.shadowScreenArray.length - 1];
-
     //Drawing shadow array on texture
     this.drawShadowArray();
-
-    // console.log("this.shadowScreenArray :>> ", this.shadowScreenArray);
-    // this.generateNextRiverSections();
-    // console.log("this.shadowScreenArray AFTER :>> ", this.shadowScreenArray);
-    // this.drawShadowArray();
-    // console.log("this.shadowScreenArray AFTER2 :>> ", this.shadowScreenArray);
-    // this.generateNextRiverSections();
-    // this.drawShadowArray();
-
-    // scene.add.image(0, 0, this.backgroundDynamicTexture).setOrigin(0);
   } //constructor(scene, backgroundTilesetName) {
+
+  drawShadowArrayRow(shadowArrRowNo) {}
 
   drawShadowArray() {
     console.log(
@@ -109,12 +82,6 @@ class BGUpdater {
       this.shadowArrayRowDrawn
     );
     var shadowArrRows = this.shMapHolder.shadowMapArray.length;
-
-    //If below is enabled it will clear all texts even if nothing is drawn
-    // for (var i = 0; i < this.debugTextsArray.length; i++) {
-    //   this.debugTextsArray[i].destroy();
-    // }
-    // this.debugTextsArray.splice(0);
 
     for (
       var rowNo = this.shadowArrayRowDrawn + 1;
@@ -175,6 +142,44 @@ class BGUpdater {
     );
   } //drawShadowArray() {
 
+  processTileBecomesInvisible(cameraPosition) {
+    var lastRowVisible = Math.floor(
+      (cameraPosition + this.scene.game.config.height - 1) / TILE_WIDTH_HEIGHT
+    );
+
+    for (var tileCol = 0; tileCol < SCENE_TILES_ROW_LEN; tileCol++) {
+      this.terrainBobsArray[0][tileCol].destroy();
+    }
+    this.terrainBobsArray.splice(0, 1);
+    console.log(
+      "this.terrainBobsArray AFTER REMOVAL:>> ",
+      this.terrainBobsArray
+    );
+    this.shadowMapFirstTilePositionOnScreen = lastRowVisible;
+
+    this.shMapHolder.shadowMapArray.splice(0, 1);
+    var prevShadowMapLen = this.shMapHolder.shadowMapArray.length;
+
+    this.shMapHolder.generateNextRiverSections();
+    console.log("Updated1 shadowmap :>> ");
+    this.shMapHolder.debugPrintToConsole();
+
+    console.log("this.shadowArrayRowDrawn :>> ", this.shadowArrayRowDrawn);
+
+    this.shadowArrayRowDrawn =
+      this.shadowArrayRowDrawn -
+      (this.shMapHolder.shadowMapArray.length - prevShadowMapLen);
+
+    console.log(
+      "this.shadowArrayRowDrawn AFTER UPDATE :>> ",
+      this.shadowArrayRowDrawn
+    );
+
+    this.drawShadowArray();
+
+    this.copyTopMostVisibleRowToBottomScreen(cameraPosition);
+  } //processTileBecomesInvisible() {
+
   update(cameraPosition) {
     console.log("update.cameraPosition :>> ", cameraPosition);
     var lastRowVisible = Math.floor(
@@ -191,31 +196,40 @@ class BGUpdater {
 
     if (lastRowVisible == SCENE_ROW_NO - 1) {
       console.log("This IS RESET of display :>> ");
+
+      console.log("FINAL ROW PROCESSING :>> ");
+      for (var tileCol = 0; tileCol < SCENE_TILES_ROW_LEN; tileCol++) {
+        this.terrainBobsArray[0][tileCol].destroy();
+      }
+      this.terrainBobsArray.splice(0, 1);
+      this.shadowMapFirstTilePositionOnScreen = lastRowVisible;
+
+      this.copyTopMostVisibleRowToBottomScreen(cameraPosition);
+      //END FINAL ROW PROCESSING
+
+      //If below is enabled it will clear all texts even if nothing is drawn
+      for (var i = 0; i < this.debugTextsArray.length; i++) {
+        this.debugTextsArray[i].destroy();
+      }
+      this.debugTextsArray.splice(0);
+      //Clearing this.terrainBobsArray
+      for (var row = 0; row < this.terrainBobsArray.length; row++) {
+        for (var col = 0; col < SCENE_TILES_ROW_LEN; col++) {
+          this.terrainBobsArray[row][col].destroy();
+        }
+      }
+      this.terrainBobsArray.splice(0);
+
+      this.terrainBobsArray = this.lowerScreenTerrainBobsArray;
+      this.lowerScreenTerrainBobsArray = [];
+      this.shadowMapFirstTilePositionOnScreen = SCENE_ROW_NO * 2 - 1;
+
+      console.log("ShadowMAP AFTER Screeen RESET :>> ");
+      this.shMapHolder.debugPrintToConsole();
     } else {
       if (lastRowVisible < this.shadowMapFirstTilePositionOnScreen) {
         console.log("TILE BECOMES INVISIBLE :>> ");
-        for (var tileCol = 0; tileCol < SCENE_TILES_ROW_LEN; tileCol++) {
-          this.terrainBobsArray[0][tileCol].destroy();
-        }
-        this.terrainBobsArray.splice(0, 1);
-        console.log(
-          "this.terrainBobsArray AFTER REMOVAL:>> ",
-          this.terrainBobsArray
-        );
-        this.shadowMapFirstTilePositionOnScreen = lastRowVisible;
-
-        var prevShadowMapLen = this.shMapHolder.shadowMapArray.length;
-        this.shMapHolder.generateNextRiverSections();
-        console.log("Updated1 shadowmap :>> ");
-        this.shMapHolder.debugPrintToConsole();
-
-        this.shadowArrayRowDrawn =
-          this.shadowArrayRowDrawn -
-          (this.shMapHolder.shadowMapArray.length - prevShadowMapLen);
-
-        this.drawShadowArray();
-
-        this.copyTopMostVisibleRowToBottomScreen(cameraPosition);
+        this.processTileBecomesInvisible(cameraPosition);
       } //if (lastRowVisible < this.shadowMapFirstTilePositionOnScreen) {
     } //else //if (lastRowVisible == SCENE_ROW_NO - 1) {
   } //update(cameraPosition) {
@@ -245,6 +259,10 @@ class BGUpdater {
         ]
       );
       terrainBobsRow.push(bob);
+
+      this.debugTextsArray.push(
+        addTextToScene(this.scene, `CopyRow`, 30, displayRowY, "#ffff0099")
+      );
       // terrainBobsRow.push(bob);
     } //for (var colNo = 0; colNo < SCENE_TILES_ROW_LEN; colNo++) {
     this.lowerScreenTerrainBobsArray.push(terrainBobsRow);
