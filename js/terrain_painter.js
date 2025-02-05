@@ -57,8 +57,8 @@ class TerrainPainter {
   } //redrawBobs() {
 
   update(cameraPosition) {
-    console.log("TerrainPainte`r update method called :>> ");
-    console.log("cameraPosition :>> ", cameraPosition);
+    // console.log("TerrainPainte`r update method called :>> ");
+    // console.log("cameraPosition :>> ", cameraPosition);
 
     if (cameraPosition == 0) {
       //This is before reset of camera

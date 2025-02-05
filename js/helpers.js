@@ -1,5 +1,5 @@
 function getRandomInt(max) {
-  //Replace with
+  //Generates random integer number from zero to (max-1)
   return Math.floor(Math.random() * max);
 }
 
@@ -45,7 +45,6 @@ function getTileArrayFromTileset(set_texture, tileWidth) {
 
 function replaceValuesInArray(oldArray, startPos, ...replacingValues) {
   var newArr = oldArray.slice();
-
   for (let newVal of replacingValues) {
     newArr[startPos] = newVal;
     startPos++;
@@ -66,3 +65,34 @@ function addTextToScene(scene, str, x, y, color = "#aaaaaa") {
     .setOrigin(0);
   dbgText.setText([`#${i}`]);
 }
+
+//This to be reworked with bobs (maybe?). Now usual text rendering will be used.
+function drawNumber(number) {
+  var num = number;
+  var currDivider = 10;
+  var digitArr = [];
+
+  while (num > 0.01) {
+    digitArr.push(num % currDivider);
+    num = Math.floor(num / 10);
+  }
+
+  while (digitArr.length < 5) {
+    digitArr.push(0);
+  }
+
+  digitArr.reverse();
+
+  var i = 0;
+  for (var digit in digitArr) {
+    this.fixed_plate.draw(
+      this.towerDefenceTileArray[276 + digitArr[digit]],
+      this.game.config.width - 200 + i * 32,
+      this.game.config.height - 100
+    );
+    i++;
+  }
+  this.fixed_plate.draw(this.towerDefenceTileArray[278], 250, 250);
+
+  // console.log('digitArr :>> ', digitArr);
+} //END drawNumber(number) {

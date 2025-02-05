@@ -74,28 +74,106 @@ class ShadowMapHolder {
     console.log("shadowMapArray.length :>> ", this.shadowMapArray.length);
   } //END debugPrintToConsole() {
 
-  generateNextRiverSections() {
-    console.log("Should leave as is :>> ");
+  rightBankDecision(leftRiverBank, rightRiverBank) {
     var lastRow = this.shadowMapArray[this.shadowMapArray.length - 1];
     var newRow = lastRow.slice(0, lastRow.length);
 
+    var rightBankDecision = getRandomInt(3);
+    console.log("rightRiverBank :>> ", rightRiverBank);
+    console.log("rightBankDecision :>> ", rightBankDecision);
+    switch (rightBankDecision) {
+      case 0: //Leave as is - do nothing.
+        break;
+
+      case 1: //Widen right bank
+        if (rightRiverBank > SCENE_TILES_ROW_LEN - 3) {
+          break;
+        } //if (rightRiverBank > (SCENE_ROW_NO - 1)) {
+        var interimRow = replaceValuesInArray(lastRow, rightRiverBank, 37, 53);
+        console.log("interimRow :>> ", interimRow);
+        this.shadowMapArray.push(interimRow);
+        newRow = replaceValuesInArray(lastRow, rightRiverBank, 42, 49);
+        break;
+      //END of case 1: //Widen right bank
+
+      case 2: //Narrow right bank
+        if (rightRiverBank <= leftRiverBank - 4) {
+          break;
+        }
+        var interimRow = replaceValuesInArray(
+          lastRow,
+          rightRiverBank - 1,
+          61,
+          41
+        );
+        // console.log("newRow :>> ", newRow);
+        this.shadowMapArray.push(interimRow);
+        newRow = replaceValuesInArray(lastRow, rightRiverBank - 1, 49, 50);
+        break;
+      //END of case 2: //Narrow right bank
+    } //switch (rightBankDecision) {
+    console.log("Returning newRow :>> ", newRow);
+    return newRow;
+  } //rightBankDecision(leftRiverBank, rightRiverBank) {
+
+  generateNextRiverSections() {
+    var lastRow = this.shadowMapArray[this.shadowMapArray.length - 1];
+
+    // var lastRow = this.shadowMapArray[this.shadowMapArray.length - 1];
+    var leftRiverBank = -1;
+    var rightRiverBank = -1;
+    for (var i = 0; i < SCENE_TILES_ROW_LEN; i++) {
+      if (lastRow[i] == 51) {
+        leftRiverBank = i;
+      }
+      if (lastRow[i] == 49) {
+        rightRiverBank = i;
+        break;
+      }
+    }
+    console.log("leftRiverBank :>> ", leftRiverBank);
+    console.log("rightRiverBank :>> ", rightRiverBank);
+
+    var leftBankDecision = getRandomInt(3);
+    console.log("leftBankDecision :>> ", leftBankDecision);
+
+    var newRow = lastRow.slice(0, lastRow.length);
+    switch (leftBankDecision) {
+      case 0: //Leave as is. Do nothing - repeated row is already in newRow
+        newRow = this.rightBankDecision(leftRiverBank, rightRiverBank);
+        break;
+
+      case 1: //Widen left bank
+        if (leftRiverBank <= 1) {
+          break;
+        } //if(leftRiverBank>1) {
+        var interimRow = replaceValuesInArray(
+          lastRow,
+          leftRiverBank - 1,
+          52,
+          39
+        );
+        console.log("interimRow :>> ", interimRow);
+        this.shadowMapArray.push(interimRow);
+        newRow = replaceValuesInArray(lastRow, leftRiverBank - 1, 51, 42);
+        break;
+      //END of case 1: //Widen left bank
+
+      case 2: //Narrow left bank
+        if (leftRiverBank >= rightRiverBank - 4) {
+          break;
+        }
+        var interimRow = replaceValuesInArray(lastRow, leftRiverBank, 40, 63);
+        // console.log("newRow :>> ", newRow);
+        this.shadowMapArray.push(interimRow);
+        newRow = replaceValuesInArray(lastRow, leftRiverBank, 50, 51);
+        break;
+      //END of case 2: //Narrow left bank
+    } //switch (leftBankDecision) {
+
     this.shadowMapArray.push(newRow);
-    //     var leftRiverBank = -1;
-    //     var rightRiverBank = -1;
-    //     for (var i = 0; i < SCENE_TILES_ROW_LEN; i++) {
-    //       if (this.lastGeneratedShadowRow[i] == 51) {
-    //         leftRiverBank = i;
-    //       }
-    //       if (this.lastGeneratedShadowRow[i] == 49) {
-    //         rightRiverBank = i;
-    //         break;
-    //       }
-    //     }
-    //     // console.log('leftRiverBank :>> ', leftRiverBank);
-    //     var leftBankDecision = Math.floor(Math.random() * 4);
-    //     // console.log("leftBankDecision :>> ", leftBankDecision);
-    //     var newRow = [];
-    //     //leave the bank as is case
+
+    //leave the bank as is case
     //     newRow = this.lastGeneratedShadowRow.slice(
     //       0,
     //       this.lastGeneratedShadowRow.length
