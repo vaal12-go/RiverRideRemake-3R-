@@ -1,17 +1,15 @@
 window.addEventListener("load", () => {
-  // console.log("I am loaded :>> ");
-  document
-    .getElementById("phaser-game-parent")
-    .addEventListener("focusout", () => {
-      console.log("parent lost focus :>> ");
-    });
+  // document
+  //   .getElementById("phaser-game-parent")
+  //   .addEventListener("focusout", () => {
+  //     console.log("parent lost focus :>> ");
+  //   });
 });
 
 class FlyerScene extends Phaser.Scene {
-  //Example from: https://phaser.io/examples/v3/view/game-objects/render-texture/graphics-to-render-texture
-  rt;
-  tls_txture;
-  tileArr;
+  // rt;
+  // tls_txture;
+  // tileArr;
   towerDefenceTileTexture;
   towerDefenceTileArray;
   fixed_plate;
@@ -24,13 +22,14 @@ class FlyerScene extends Phaser.Scene {
   right_key;
   space_key;
   pause_key;
-  // game_paused = fals-e;
+  // game_paused = false;
   game_paused = true;
   step_forward_key;
   step_once = false;
   cycleNo;
 
   bgUpdater = null;
+  terraPainter = null;
   dashboard = null;
   dbgText = null;
 
@@ -59,14 +58,10 @@ class FlyerScene extends Phaser.Scene {
 
   create() {
     this.cycleNo = 0;
-    this.bgUpdater = new BGUpdater(this, "bg_tileset");
-    this.positionalUpdatedObjectsArray.push(this.bgUpdater);
-    // this.fixed_plate = this.textures.addDynamicTexture(
-    //   "fixedTexture",
-    //   this.game.config.width,
-    //   this.game.config.height
-    // );
-    const blitter = this.add.blitter(100, 1500, "terrain_atlas");
+    // this.bgUpdater = new BGUpdater(this, "bg_tileset");
+    // this.positionalUpdatedObjectsArray.push(this.bgUpdater);
+    this.terraPainter = new TerrainPainter(this);
+    this.positionalUpdatedObjectsArray.push(this.terraPainter);
 
     // this.dashboard = new Dashboard(this);
     // this.positionalUpdatedObjectsArray.push(this.dashboard);
@@ -90,7 +85,6 @@ class FlyerScene extends Phaser.Scene {
       this.towerDefenceTileTexture,
       64
     );
-    // this.add.image(1200, 1200, this.towerDefenceTileTexture);
 
     this.airplane_sprite = this.add
       .sprite(
