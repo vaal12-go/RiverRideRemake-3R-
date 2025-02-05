@@ -97,7 +97,8 @@ class ShadowMapHolder {
       //END of case 1: //Widen right bank
 
       case 2: //Narrow right bank
-        if (rightRiverBank <= leftRiverBank - 4) {
+        if (rightRiverBank <= leftRiverBank + 4) {
+          console.log("Breaking :>> ");
           break;
         }
         var interimRow = replaceValuesInArray(
@@ -134,7 +135,12 @@ class ShadowMapHolder {
     console.log("leftRiverBank :>> ", leftRiverBank);
     console.log("rightRiverBank :>> ", rightRiverBank);
 
-    var leftBankDecision = getRandomInt(3);
+    var leftBankDecision = getRandomInt(7);
+    //Probabilities:
+    // 0 - both banks stay the same
+    // 1 -  widen left bank
+    // 2 - narrow left bank
+    // 3 to 6 - some decision with right bank.
     console.log("leftBankDecision :>> ", leftBankDecision);
 
     var newRow = lastRow.slice(0, lastRow.length);
@@ -161,6 +167,7 @@ class ShadowMapHolder {
 
       case 2: //Narrow left bank
         if (leftRiverBank >= rightRiverBank - 4) {
+          console.log("Breaking :>> ");
           break;
         }
         var interimRow = replaceValuesInArray(lastRow, leftRiverBank, 40, 63);
@@ -169,6 +176,10 @@ class ShadowMapHolder {
         newRow = replaceValuesInArray(lastRow, leftRiverBank, 50, 51);
         break;
       //END of case 2: //Narrow left bank
+
+      default: //Left bank stays - decision is with right bank
+        newRow = this.rightBankDecision(leftRiverBank, rightRiverBank);
+        break;
     } //switch (leftBankDecision) {
 
     this.shadowMapArray.push(newRow);
