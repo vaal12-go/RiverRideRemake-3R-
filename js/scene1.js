@@ -1,9 +1,5 @@
 window.addEventListener("load", () => {
-  // document
-  //   .getElementById("phaser-game-parent")
-  //   .addEventListener("focusout", () => {
-  //     console.log("parent lost focus :>> ");
-  //   });
+  console.log("window loaded :>> ");
 });
 
 class FlyerScene extends Phaser.Scene {
@@ -99,9 +95,18 @@ class FlyerScene extends Phaser.Scene {
         fill: "#000000",
       })
       .setOrigin(0);
-    this.dbgText.setText(["This is debug text"]);
+    // this.dbgText.setText(["This is debug text"]);
 
     this.initInputs();
+
+    this.dbgText.y = this.cameras.main.scrollY;
+    this.dbgText.setText(
+      `Frame ${this.cycleNo} \n 
+       NumPad Plus - proceeed/stop \n 
+       NumPad Minus - proceed one frame \n 
+       Space - shoot sound \n
+       Arrow left\\right - plane moves left and right`
+    );
   }
 
   initInputs() {
@@ -199,8 +204,10 @@ class FlyerScene extends Phaser.Scene {
     this.cameras.main.scrollY -= CAMERA_SCROLL_DELTA;
     this.fixed_plate_img.y -= CAMERA_SCROLL_DELTA;
     this.airplane_sprite.y -= CAMERA_SCROLL_DELTA;
-    this.dbgText.y = 20 + this.cameras.main.scrollY;
-    this.dbgText.setText(`Hello ${this.cycleNo}`);
+    this.dbgText.y = this.cameras.main.scrollY;
+    this.dbgText.setText(
+      `Frame ${this.cycleNo} \n NumPad Plus - proceeed \n NumPad Minus - proceed one frame \n Space - shoot sound`
+    );
     // console.log(
     //   "this.cameras.main.scrollY AFTER+ UPDATE :>> ",
     //   this.cameras.main.scrollY
