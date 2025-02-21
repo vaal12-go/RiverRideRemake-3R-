@@ -40,7 +40,7 @@ class FlyerScene extends Phaser.Scene {
     //https://medium.com/@michaelwesthadley/modular-game-worlds-in-phaser-3-tilemaps-1-958fc7e6bbd6
     this.load.tilemapCSV(
       STARTING_TILEMAP,
-      "/tilemaps/flyer_starting map_29Jan2025._BGLayer1.csv"
+      "tilemaps/flyer_starting map_29Jan2025._BGLayer1.csv"
     );
     this.load.atlas(
       "terrain_atlas",
