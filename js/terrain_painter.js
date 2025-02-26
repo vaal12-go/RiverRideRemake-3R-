@@ -12,6 +12,7 @@ class TerrainPainter {
     this.shadowMap.debugPrintToConsole();
     var shadmap = this.shadowMap.getShadowMap();
     console.log("shadmap :>> ", shadmap);
+    this.shadowMap.debugPrintToConsole();
 
     this.terrainBlitter = this.scene.add.blitter(0, 0, "terrain_atlas");
     //Creating bobs/frames:

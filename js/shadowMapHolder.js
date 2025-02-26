@@ -1,6 +1,9 @@
 class ShadowMapHolder {
   shadowMapArray = [];
   scene = null;
+  currentAbsRow = 0;
+  lastBridgeGeneratedRow = -1000;
+  MIN_ROWS_BETWEEN_BRIDGES = 30;
 
   constructor(scene) {
     this.scene = scene;
@@ -31,45 +34,60 @@ class ShadowMapHolder {
     this.shadowMapArray.splice(0, 1);
   }
 
+  debugChar(tileCode) {
+    switch (tileCode) {
+      case 37:
+        return "(";
+      case 39:
+        return ")";
+      case 40:
+        return "t";
+      case 41:
+        return "T";
+      case 42:
+        return "~";
+      case 49:
+        return "}";
+      case 50:
+        return "*";
+      case 51:
+        return "{";
+      case 52:
+        return "L";
+      case 53:
+        return "J";
+
+      case 63:
+        return "\\";
+      case 61:
+        return "/";
+      case 74:
+        return "=";
+      case 109:
+        return "^";
+      default:
+        return `_${tileCode}_`;
+    }
+  } //debugChar(tileCode) {
+
+  debugPrintMapLine(mapLine) {
+    let outStr = "";
+    for (let charIdx in mapLine) {
+      outStr += this.debugChar(mapLine[charIdx]);
+    }
+    console.log("debugPrintMapLine :>> ", outStr);
+    return outStr;
+  }
+
   debugPrintToConsole() {
-    // var lineNo = this.shadowMapArray.length-1;
     for (let rowNo = this.shadowMapArray.length - 1; rowNo >= 0; rowNo--) {
       var line2Print = zeroFill(rowNo, 2) + ": ";
       for (let colNo = 0; colNo < SCENE_TILES_ROW_LEN; colNo++) {
         var mapTile = this.shadowMapArray[rowNo][colNo];
-        var outStr = zeroFill(mapTile, 2);
-        switch (mapTile) {
-          case 50:
-            outStr = "*";
-            break;
-          case 51:
-            outStr = "{";
-            break;
-          case 42:
-            outStr = "~";
-            break;
-          case 49:
-            outStr = "}";
-            break;
-          case 40:
-            outStr = "L";
-            break;
-          case 63:
-            outStr = "\\";
-            break;
-          case 61:
-            outStr = "/";
-            break;
-          case 41:
-            outStr = "T";
-            break;
-        }
-        // line2Print += "," + outStr;
+        var outStr = this.debugChar(mapTile);
         line2Print += outStr;
       }
-
       console.log("line2Print :>> ", line2Print);
-      // lineNo++;
     }
     console.log("shadowMapArray.length :>> ", this.shadowMapArray.length);
   } //END debugPrintToConsole() {
@@ -79,8 +97,6 @@ class ShadowMapHolder {
     var newRow = lastRow.slice(0, lastRow.length);
 
     var rightBankDecision = getRandomInt(3);
-    console.log("rightRiverBank :>> ", rightRiverBank);
-    console.log("rightBankDecision :>> ", rightBankDecision);
     switch (rightBankDecision) {
       case 0: //Leave as is - do nothing.
         break;
@@ -90,7 +106,6 @@ class ShadowMapHolder {
           break;
         } //if (rightRiverBank > (SCENE_ROW_NO - 1)) {
         var interimRow = replaceValuesInArray(lastRow, rightRiverBank, 37, 53);
-        console.log("interimRow :>> ", interimRow);
         this.shadowMapArray.push(interimRow);
         newRow = replaceValuesInArray(lastRow, rightRiverBank, 42, 49);
         break;
@@ -98,7 +113,6 @@ class ShadowMapHolder {
 
       case 2: //Narrow right bank
         if (rightRiverBank <= leftRiverBank + 4) {
-          console.log("Breaking :>> ");
           break;
         }
         var interimRow = replaceValuesInArray(
@@ -107,22 +121,89 @@ class ShadowMapHolder {
           61,
           41
         );
-        // console.log("newRow :>> ", newRow);
         this.shadowMapArray.push(interimRow);
         newRow = replaceValuesInArray(lastRow, rightRiverBank - 1, 49, 50);
         break;
       //END of case 2: //Narrow right bank
     } //switch (rightBankDecision) {
-    console.log("Returning newRow :>> ", newRow);
     return newRow;
   } //rightBankDecision(leftRiverBank, rightRiverBank) {
 
-  generateNextRiverSections() {
-    var lastRow = this.shadowMapArray[this.shadowMapArray.length - 1];
+  generateBridgeSection(leftRiverBank, rightRiverBank) {
+    // console.log("generateBridgeSection. leftRiverBank :>> ", leftRiverBank);
+    // console.log("generateBridgeSection. rightRiverBank :>> ", rightRiverBank);
 
-    // var lastRow = this.shadowMapArray[this.shadowMapArray.length - 1];
-    var leftRiverBank = -1;
-    var rightRiverBank = -1;
+    var lastRow = this.shadowMapArray[this.shadowMapArray.length - 1];
+    // console.log("lastRow   :>> ");
+    this.debugPrintMapLine(lastRow);
+    // TODO: rewrite this to use mapFragment - array of arrays with bridge tilemaps
+    var interimRow = replaceValuesInArray(
+      lastRow,
+      leftRiverBank,
+      40,
+      63,
+      42,
+      42,
+      61,
+      41
+    );
+    // interimRow = replaceValuesInArray(interimRow, leftRiverBank, 40, 63);
+    // console.log("interimRow1:>> ");
+    this.debugPrintMapLine(interimRow);
+
+    // let interimRow2 = replaceValuesInArray(
+    //   interimRow,
+    //   leftRiverBank,
+    //   74,
+    //   74,
+    //   42,
+    //   42,
+    //   74,
+    //   74
+    // );
+    // console.log("interimRow2 :>> ");
+    // this.debugPrintMapLine(interimRow2);
+    let roadRow = new Array(SCENE_ROW_LEN);
+    roadRow.fill(74, 0, SCENE_ROW_LEN);
+    // console.log("roadRow :>> ", roadRow);
+    let interimRow3 = replaceValuesInArray(
+      roadRow,
+      leftRiverBank + 2,
+      109,
+      109
+    );
+    // console.log("interimRow3 :>> ");
+    this.debugPrintMapLine(interimRow3);
+
+    let interimRow4 = replaceValuesInArray(
+      interimRow,
+      leftRiverBank,
+      52,
+      39,
+      42,
+      42,
+      37,
+      53
+    );
+    // console.log("interimRow4 :>> ");
+    this.debugPrintMapLine(interimRow4);
+
+    // console.log("interimRow5 :>> ");
+    this.debugPrintMapLine(lastRow);
+
+    this.shadowMapArray.push(interimRow);
+    // this.shadowMapArray.push(interimRow2);
+    this.shadowMapArray.push(interimRow3);
+    this.shadowMapArray.push(interimRow4);
+    this.shadowMapArray.push(lastRow);
+    this.debugPrintToConsole();
+  } //generateBridgeSection(leftRiverBank, rightRiverBank) {
+
+  generateNextRiverSections() {
+    let mapArrLenBefore = this.shadowMapArray.length;
+    let lastRow = this.shadowMapArray[this.shadowMapArray.length - 1];
+    let leftRiverBank = -1;
+    let rightRiverBank = -1;
     for (var i = 0; i < SCENE_TILES_ROW_LEN; i++) {
       if (lastRow[i] == 51) {
         leftRiverBank = i;
@@ -132,8 +213,25 @@ class ShadowMapHolder {
         break;
       }
     }
+
+    var riverWidth = rightRiverBank - leftRiverBank;
     console.log("leftRiverBank :>> ", leftRiverBank);
     console.log("rightRiverBank :>> ", rightRiverBank);
+
+    if (riverWidth == 5) {
+      if (
+        this.currentAbsRow >
+        this.lastBridgeGeneratedRow + this.MIN_ROWS_BETWEEN_BRIDGES
+      ) {
+        console.log("riverWidth  :>> ", riverWidth);
+
+        console.log("Will make Bridge!! :>> ");
+        this.generateBridgeSection(leftRiverBank, rightRiverBank);
+        this.currentAbsRow += 5;
+        this.lastBridgeGeneratedRow = this.currentAbsRow;
+        return;
+      }
+    }
 
     var leftBankDecision = getRandomInt(7);
     //Probabilities:
@@ -141,7 +239,9 @@ class ShadowMapHolder {
     // 1 -  widen left bank
     // 2 - narrow left bank
     // 3 to 6 - some decision with right bank.
-    console.log("leftBankDecision :>> ", leftBankDecision);
+    // console.log("leftBankDecision :>> ", leftBankDecision);
+    // TEST
+    // leftBankDecision = 2;
 
     var newRow = lastRow.slice(0, lastRow.length);
     switch (leftBankDecision) {
@@ -159,7 +259,6 @@ class ShadowMapHolder {
           52,
           39
         );
-        console.log("interimRow :>> ", interimRow);
         this.shadowMapArray.push(interimRow);
         newRow = replaceValuesInArray(lastRow, leftRiverBank - 1, 51, 42);
         break;
@@ -167,11 +266,9 @@ class ShadowMapHolder {
 
       case 2: //Narrow left bank
         if (leftRiverBank >= rightRiverBank - 4) {
-          console.log("Breaking :>> ");
           break;
         }
         var interimRow = replaceValuesInArray(lastRow, leftRiverBank, 40, 63);
-        // console.log("newRow :>> ", newRow);
         this.shadowMapArray.push(interimRow);
         newRow = replaceValuesInArray(lastRow, leftRiverBank, 50, 51);
         break;
@@ -183,68 +280,8 @@ class ShadowMapHolder {
     } //switch (leftBankDecision) {
 
     this.shadowMapArray.push(newRow);
-
-    //leave the bank as is case
-    //     newRow = this.lastGeneratedShadowRow.slice(
-    //       0,
-    //       this.lastGeneratedShadowRow.length
-    //     );
-    //     switch (leftBankDecision) {
-    //       case 0: //Widen left bank
-    //         if (leftRiverBank <= 1) {
-    //           break;
-    //         } //if(leftRiverBank>1) {
-    //         // console.log("Testing  replaceValuesInArray:>> ");
-    //         // console.log(
-    //         //   "this.lastGeneratedShadowRow :>> ",
-    //         //   this.lastGeneratedShadowRow
-    //         // );
-    //         var newRow = replaceValuesInArray(
-    //           this.lastGeneratedShadowRow,
-    //           leftRiverBank - 1,
-    //           52,
-    //           39
-    //         );
-    //         // console.log("newRow :>> ", newRow);
-    //         this.shadowScreenArray.push(newRow);
-    //         newRow = replaceValuesInArray(
-    //           this.lastGeneratedShadowRow,
-    //           leftRiverBank - 1,
-    //           51,
-    //           42
-    //         );
-    //         // console.log("newRow :>> ", newRow);
-    //         break;
-    //       //END case 0: //Widen left bank
-    //       case 1: //Leave the bank as is
-    //         console.log("Should leave as is :>> ");
-    //         newRow = this.lastGeneratedShadowRow.slice(
-    //           0,
-    //           this.lastGeneratedShadowRow.length
-    //         );
-    //         break;
-    //       case 2: //Narrow the left bank
-    //         if (leftRiverBank >= rightRiverBank - 2) {
-    //           break;
-    //         }
-    //         var newRow = replaceValuesInArray(
-    //           this.lastGeneratedShadowRow,
-    //           leftRiverBank,
-    //           40,
-    //           63
-    //         );
-    //         // console.log("newRow :>> ", newRow);
-    //         this.shadowScreenArray.push(newRow);
-    //         newRow = replaceValuesInArray(
-    //           this.lastGeneratedShadowRow,
-    //           leftRiverBank,
-    //           50,
-    //           51
-    //         );
-    //         break;
-    //     } //switch(leftBankDecision) {
-    //     this.shadowScreenArray.push(newRow);
-    //     this.lastGeneratedShadowRow = newRow;
-    //   } //generateNextRiverSections() {
+    let mapArrLenAfter = this.shadowMapArray.length;
+    this.currentAbsRow += mapArrLenAfter - mapArrLenBefore;
+    console.log("this.currentAbsRow :>> ", this.currentAbsRow);
   } //END generateNextRiverSections() {
 } //END class ShadowMapHolder {
