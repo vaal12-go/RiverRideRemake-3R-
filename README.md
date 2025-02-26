@@ -7,3 +7,5 @@ Very early development stage. Endless virtual map implemented (with dynamic rive
 ## Live preview (due to relative links issue - works only in Chrome browser)
    [@Github pages](https://vaal12-go.github.io/RiverRideRemake-3R-/index.html)
 
+Updates:
+* 26Feb2025 - added bridge generation
