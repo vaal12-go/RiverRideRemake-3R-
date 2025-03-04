@@ -5,9 +5,11 @@
     <script src="js/phaser3.87.min.js"></script>
     <script src="js/constants.js"></script>
     <script src="js/helpers.js"></script>
-    <!-- <script src="js/bgUpdater.js"></script> -->
+    <script src="js/fixedObjectMapHolder.js"></script>
     <script src="js/shadowMapHolder.js"></script>
     <script src="js/terrain_painter.js"></script>
+    <script src="js/jet.js"></script>
+    <script src="js/objectPainter.js"></script>
     <script src="js/dashboard.js"></script>
 
     <script src="js/river_raid_scene.js"></script>
@@ -27,8 +29,19 @@
       };
     </script>
 
-    <div>Above</div>
-    <div id="phaser-game-parent" style="background: #00f"></div>
+    <div style="background: #00f; float: left">
+      <div id="phaser-game-parent"></div>
+    </div>
+    <div style="background: rgb(216, 237, 222); float: left; padding: 15px">
+      <h1>River Raid Remake (3R)</h1>
+      <p>dev version 04Mar2025</p>
+      <p>Controls</p>
+      <p>NumPad Plus - proceeed/stop</p>
+      <p>NumPad Minus - proceed one frame</p>
+      <p>
+        Space - shoot sound \n Arrow left\\right - plane moves left and right`
+      </p>
+    </div>
     <div>below</div>
   </body>
 </html>

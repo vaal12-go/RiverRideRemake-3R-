@@ -21,12 +21,13 @@ class RiverRaidScene extends Phaser.Scene {
   step_once = false;
   cycleNo;
 
-  bgUpdater = null;
+  // bgUpdater = null;
   terraPainter = null;
   dashboard = null;
   dbgText = null;
 
   positionalUpdatedObjectsArray = []; //All should have method update(cameraPosition)
+  objectPainter = null;
 
   preload() {
     this.load.image("bg1", "img/red.png");
@@ -34,6 +35,8 @@ class RiverRaidScene extends Phaser.Scene {
     this.load.image("bg_tileset", "img/tiles_packed_32.png");
     this.load.image("tower_defence_tileset", "img/towerDefense_tilesheet.png");
     this.load.image("fuel_gauge", "img/FuelGauge.png");
+    this.load.image("fuel_tank", "img/fuel/Fuel_29Feb2025.png");
+    this.load.image("jet", "img/jet/detailed_jet.png");
     this.load.audio("gunShot", [
       "audio/Beefy-AR10-7.62x51-308-Close-Single-Gunshot-B.mp3",
     ]);
@@ -53,6 +56,9 @@ class RiverRaidScene extends Phaser.Scene {
     this.cycleNo = 0;
     this.terraPainter = new TerrainPainter(this);
     this.positionalUpdatedObjectsArray.push(this.terraPainter);
+
+    this.objectPainter = new ObjectPainter(this, this.terraPainter);
+    this.positionalUpdatedObjectsArray.push(this.objectPainter);
 
     // this.dashboard = new Dashboard(this);
     // this.positionalUpdatedObjectsArray.push(this.dashboard);
@@ -102,10 +108,7 @@ class RiverRaidScene extends Phaser.Scene {
     this.dbgText.y = this.cameras.main.scrollY;
     this.dbgText.setText(
       `Frame ${this.cycleNo} \n 
-       NumPad Plus - proceeed/stop \n 
-       NumPad Minus - proceed one frame \n 
-       Space - shoot sound \n
-       Arrow left\\right - plane moves left and right`
+       `
     );
   }
 
@@ -205,9 +208,7 @@ class RiverRaidScene extends Phaser.Scene {
     this.fixed_plate_img.y -= CAMERA_SCROLL_DELTA;
     this.airplane_sprite.y -= CAMERA_SCROLL_DELTA;
     this.dbgText.y = this.cameras.main.scrollY;
-    this.dbgText.setText(
-      `Frame ${this.cycleNo} \n NumPad Plus - proceeed \n NumPad Minus - proceed one frame \n Space - shoot sound`
-    );
+    this.dbgText.setText(`Frame ${this.cycleNo}`);
     // console.log(
     //   "this.cameras.main.scrollY AFTER+ UPDATE :>> ",
     //   this.cameras.main.scrollY

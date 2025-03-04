@@ -1,5 +1,6 @@
 class ShadowMapHolder {
   shadowMapArray = [];
+  fixedObjHolder = null;
   scene = null;
   currentAbsRow = 0;
   lastBridgeGeneratedRow = -1000;
@@ -21,6 +22,8 @@ class ShadowMapHolder {
       }
       this.shadowMapArray.push(newRowArr);
     } //for(var rowNo=0; rowNo<SCENE_ROW_NO; rowNo++) {
+
+    this.fixedObjHolder = new FixedObjectMapHolder(scene, this);
   } //END constructor(startingTileSetName)
 
   getShadowMap() {
@@ -32,6 +35,7 @@ class ShadowMapHolder {
 
   removeBottomRow() {
     this.shadowMapArray.splice(0, 1);
+    this.fixedObjHolder.removeBottomRow();
   }
 
   debugChar(tileCode) {
@@ -80,6 +84,7 @@ class ShadowMapHolder {
   }
 
   debugPrintToConsole() {
+    console.log("debugPrintToConsole() :>> ", this.shadowMapArray);
     for (let rowNo = this.shadowMapArray.length - 1; rowNo >= 0; rowNo--) {
       var line2Print = zeroFill(rowNo, 2) + ": ";
       for (let colNo = 0; colNo < SCENE_TILES_ROW_LEN; colNo++) {
@@ -88,8 +93,10 @@ class ShadowMapHolder {
         line2Print += outStr;
       }
       console.log("line2Print :>> ", line2Print);
+      let banks = this.getRiverBanks(rowNo);
+      // console.log("banks :>> ", banks);
     }
-    console.log("shadowMapArray.length :>> ", this.shadowMapArray.length);
+    // console.log("shadowMapArray.length :>> ", this.shadowMapArray.length);
   } //END debugPrintToConsole() {
 
   rightBankDecision(leftRiverBank, rightRiverBank) {
@@ -135,7 +142,7 @@ class ShadowMapHolder {
 
     var lastRow = this.shadowMapArray[this.shadowMapArray.length - 1];
     // console.log("lastRow   :>> ");
-    this.debugPrintMapLine(lastRow);
+    // this.debugPrintMapLine(lastRow);
     // TODO: rewrite this to use mapFragment - array of arrays with bridge tilemaps
     var interimRow = replaceValuesInArray(
       lastRow,
@@ -149,7 +156,7 @@ class ShadowMapHolder {
     );
     // interimRow = replaceValuesInArray(interimRow, leftRiverBank, 40, 63);
     // console.log("interimRow1:>> ");
-    this.debugPrintMapLine(interimRow);
+    // this.debugPrintMapLine(interimRow);
 
     // let interimRow2 = replaceValuesInArray(
     //   interimRow,
@@ -173,7 +180,7 @@ class ShadowMapHolder {
       109
     );
     // console.log("interimRow3 :>> ");
-    this.debugPrintMapLine(interimRow3);
+    // this.debugPrintMapLine(interimRow3);
 
     let interimRow4 = replaceValuesInArray(
       interimRow,
@@ -186,46 +193,80 @@ class ShadowMapHolder {
       53
     );
     // console.log("interimRow4 :>> ");
-    this.debugPrintMapLine(interimRow4);
+    // this.debugPrintMapLine(interimRow4);
 
     // console.log("interimRow5 :>> ");
-    this.debugPrintMapLine(lastRow);
+    // this.debugPrintMapLine(lastRow);
 
     this.shadowMapArray.push(interimRow);
     // this.shadowMapArray.push(interimRow2);
     this.shadowMapArray.push(interimRow3);
     this.shadowMapArray.push(interimRow4);
     this.shadowMapArray.push(lastRow);
-    this.debugPrintToConsole();
+    // this.debugPrintToConsole();
   } //generateBridgeSection(leftRiverBank, rightRiverBank) {
 
-  generateNextRiverSections() {
-    let mapArrLenBefore = this.shadowMapArray.length;
-    let lastRow = this.shadowMapArray[this.shadowMapArray.length - 1];
+  getRiverBanks(rowNo = -1) {
+    // console.log("getRiverBanks :>> ");
+
+    if (rowNo == -1) {
+      rowNo = this.shadowMapArray.length - 1;
+    }
+    let lastRow = this.shadowMapArray[rowNo];
+    // this.debugPrintMapLine(lastRow);
     let leftRiverBank = -1;
     let rightRiverBank = -1;
-    for (var i = 0; i < SCENE_TILES_ROW_LEN; i++) {
-      if (lastRow[i] == 51) {
-        leftRiverBank = i;
+    let i = 0;
+    for (; i < SCENE_TILES_ROW_LEN; i++) {
+      // console.log("lastRow[i] :>> ", lastRow[i]);
+      if (lastRow[i] == 42) {
+        leftRiverBank = i - 1;
+        break;
       }
-      if (lastRow[i] == 49) {
+    }
+    for (; i < SCENE_TILES_ROW_LEN; i++) {
+      if (lastRow[i] != 42) {
         rightRiverBank = i;
         break;
       }
     }
+    let retObj = {
+      leftRiverBank: leftRiverBank,
+      rightRiverBank: rightRiverBank,
+      riverWidth: rightRiverBank - leftRiverBank,
+    };
+    // console.log("retObj :>> ", retObj);
+    return retObj;
+  } //getRiverBanks() {
 
+  getRiverBanksCorrected(rowNo = -1) {
+    let banks = this.getRiverBanks(rowNo);
+    return {
+      leftRiverBank: banks.leftRiverBank + 1,
+      rightRiverBank: banks.rightRiverBank - 1,
+      riverWidth: banks.rightRiverBank - banks.leftRiverBank - 1,
+    };
+  } //getRiverBanksCorrected(rowNo = -1) {
+
+  generateNextRiverSections() {
+    let banksObj = this.getRiverBanks();
+    let leftRiverBank = banksObj.leftRiverBank;
+    let rightRiverBank = banksObj.rightRiverBank;
     var riverWidth = rightRiverBank - leftRiverBank;
-    console.log("leftRiverBank :>> ", leftRiverBank);
-    console.log("rightRiverBank :>> ", rightRiverBank);
+
+    let mapArrLenBefore = this.shadowMapArray.length;
+    let lastRow = this.shadowMapArray[mapArrLenBefore - 1];
+    // console.log("leftRiverBank :>> ", leftRiverBank);
+    // console.log("rightRiverBank :>> ", rightRiverBank);
 
     if (riverWidth == 5) {
       if (
         this.currentAbsRow >
         this.lastBridgeGeneratedRow + this.MIN_ROWS_BETWEEN_BRIDGES
       ) {
-        console.log("riverWidth  :>> ", riverWidth);
+        // console.log("riverWidth  :>> ", riverWidth);
 
-        console.log("Will make Bridge!! :>> ");
+        // console.log("Will make Bridge!! :>> ");
         this.generateBridgeSection(leftRiverBank, rightRiverBank);
         this.currentAbsRow += 5;
         this.lastBridgeGeneratedRow = this.currentAbsRow;
@@ -282,6 +323,8 @@ class ShadowMapHolder {
     this.shadowMapArray.push(newRow);
     let mapArrLenAfter = this.shadowMapArray.length;
     this.currentAbsRow += mapArrLenAfter - mapArrLenBefore;
-    console.log("this.currentAbsRow :>> ", this.currentAbsRow);
+    // console.log("this.currentAbsRow :>> ", this.currentAbsRow);
+
+    this.fixedObjHolder.generateObjects();
   } //END generateNextRiverSections() {
 } //END class ShadowMapHolder {
