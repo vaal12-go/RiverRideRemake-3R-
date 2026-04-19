@@ -1,4 +1,4 @@
-class TerrainPainter {
+export class TerrainPainter {
   scene = null;
   shadowMap = null;
   framesArray = [null]; //sprite atlas starts from #1

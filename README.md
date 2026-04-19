@@ -11,6 +11,10 @@ Very early development stage. Endless virtual map implemented (with dynamic rive
 ## Live preview (due to relative links issue - works only in Chrome browser)
    [@Github pages](https://vaal12-go.github.io/RiverRideRemake-3R-/index.html)
 
+## Dev notes
+
+
 Updates:
+* 2026Apr19 - better js file organization (modules). Dev notes initial version.
 * 04Mar2025 - other terrain (decorative) object generation + initial version of dynamic object display.
 * 26Feb2025 - added bridge generation

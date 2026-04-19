@@ -1,8 +1,12 @@
+import {TerrainPainter} from '../../terrain_painter.js'
+
 window.addEventListener("load", () => {
+  // TODO: if this is necessary - this belongs in window initialization.
   console.log("window loaded :>> ");
 });
 
-class RiverRaidScene extends Phaser.Scene {
+// HIGH: clean this file
+export class RiverRaidScene extends Phaser.Scene {
   towerDefenceTileTexture;
   towerDefenceTileArray;
   fixed_plate;
@@ -15,6 +19,8 @@ class RiverRaidScene extends Phaser.Scene {
   right_key;
   space_key;
   pause_key;
+  debug_key_logging_enabled = false;
+  debug_sound_disable = true;
   // game_paused = false;
   game_paused = true;
   step_forward_key;
@@ -63,7 +69,7 @@ class RiverRaidScene extends Phaser.Scene {
     // this.dashboard = new Dashboard(this);
     // this.positionalUpdatedObjectsArray.push(this.dashboard);
 
-    console.log("this.SCENE_ROW_NO :>> ", SCENE_ROW_NO);
+    console.log('River raid main game scene start');
     console.log("this.SCENE_ROW_LEN :>> ", SCENE_ROW_LEN);
     console.log("this.game.config.height :>> ", this.game.config.height);
     console.log("this.game.config.width :>> ", this.game.config.width);
@@ -129,29 +135,33 @@ class RiverRaidScene extends Phaser.Scene {
       Phaser.Input.Keyboard.KeyCodes.SPACE
     );
     this.pause_key = this.input.keyboard.addKey(
-      Phaser.Input.Keyboard.KeyCodes.NUMPAD_ADD
+      Phaser.Input.Keyboard.KeyCodes.ZERO
     );
     this.step_forward_key = this.input.keyboard.addKey(
-      Phaser.Input.Keyboard.KeyCodes.NUMPAD_SUBTRACT
+      Phaser.Input.Keyboard.KeyCodes.NINE
     );
 
     var sceneObj = this;
     this.pause_key.on("up", (event) => {
-      console.log("key up :>> ");
+      if(this.debug_key_logging_enabled)
+        console.log("key up :>> ");
       sceneObj.game_paused = !sceneObj.game_paused;
     });
 
     this.step_forward_key.on("up", (event) => {
-      console.log("Step key up :>> ");
+      if(this.debug_key_logging_enabled)
+        console.log("Step key up :>> ");
       sceneObj.step_once = true;
     });
 
     this.space_key.on("down", (evt) => {
-      console.log("SPACE isdown :>> ");
+      if(this.debug_key_logging_enabled)
+        console.log("SPACE isdown :>> ");
       //Audio example: https://github.com/phaserjs/examples/blob/master/public/src/audio/HTML5%20Audio/play%20audio%20file.js
-      const music = this.sound.add("gunShot");
-      music.play();
-      // this.airplane_sprite.y = this.airplane_sprite.x - 2
+      if(!this.debug_sound_disable) {
+        const music = this.sound.add("gunShot");
+        music.play();
+      }
     }); //this.space_key.on("down", (evt)=> {
   }
 
@@ -164,13 +174,15 @@ class RiverRaidScene extends Phaser.Scene {
 
   processLongKeyPresses() {
     if (this.left_key.isDown) {
-      console.log("left isdown :>> ");
+      if(this.debug_key_logging_enabled)
+        console.log("left isdown :>> ");
       this.airplane_sprite.x = this.airplane_sprite.x - 2;
       this.airplane_sprite.angle = -100;
     }
 
     if (this.right_key.isDown) {
-      console.log("right isdown :>> ");
+      if(this.debug_key_logging_enabled)
+        console.log("right isdown :>> ");
       this.airplane_sprite.x = this.airplane_sprite.x + 2;
     }
   } //processLongKeyPresses() {
@@ -186,10 +198,7 @@ class RiverRaidScene extends Phaser.Scene {
 
     this.processLongKeyPresses();
 
-    // console.log(
-    //   "this.cameras.main.scrollY BEFORE UPDATE :>> ",
-    //   this.cameras.main.scrollY
-    // );
+    
 
     this.cycleNo += 1;
     if (this.cycleNo > 1000) this.cycleNo = 0;
@@ -228,3 +237,6 @@ class RiverRaidScene extends Phaser.Scene {
     }
   } //update() {
 } //class FlyerScene extends Phaser.Scene {
+
+
+
