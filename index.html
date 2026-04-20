@@ -1,38 +1,22 @@
 <!doctype html>
 <html>
   <head>
-    <!-- <script src="js/phaser-arcade-physics.min.js"></script> -->
     <script src="js/lib/phaser3.87.min.js"></script>
-    <script src="js/constants.js"></script>
-    <script src="js/helpers.js"></script>
-    <script src="js/fixedObjectMapHolder.js"></script>
-    <script src="js/shadowMapHolder.js"></script>
-
-    <script src="js/jet.js"></script>
-    <script src="js/objectPainter.js"></script>
-    <script src="js/dashboard.js"></script>
+    <!-- <script src="js/helpers.js"></script> -->
+    <!-- <script src="js/jet.js"></script> -->
+    <!-- <script src="js/objectPainter.js"></script> -->
+    <!-- <script src="js/dashboard.js"></script> -->
   </head>
   <body style="background-color: black">
     <script type="module">
-      // TODO: move this code to separate file?
-      import { RiverRaidScene } from "./js/scenes/main_game/river_raid_scene.js";
-      window.onload = () => {
-        const config = {
-          type: Phaser.AUTO,
-          width: 640, //20 tiles of 32px
-          height: 864, //27 tiles of 32px
-          scene: RiverRaidScene,
-          parent: "phaser-game-parent",
-        };
-
-        const game = new Phaser.Game(config);
-      };
+      import { initGame } from "./js/init_game.js";
+      initGame();
     </script>
 
     <div style="background: #00f; float: left">
-      <div id="phaser-game-parent"></div>
+      <div id="phaser-game-parent" style="height: 864px"></div>
     </div>
-    <div style="background: rgb(216, 237, 222); float: left; padding: 15px">
+    <div style="background: rgb(216, 237, 222); float: left">
       <h1>River Raid Remake (3R)</h1>
       <p>dev version 2026Apr18</p>
       <p>Controls</p>

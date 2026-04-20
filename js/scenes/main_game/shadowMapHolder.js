@@ -1,4 +1,8 @@
-class ShadowMapHolder {
+import * as constants from "../../constants.js"
+import {FixedObjectMapHolder} from './fixedObjectMapHolder.js'
+import {getRandomInt, replaceValuesInArray} from '../../helpers.js'
+
+export class ShadowMapHolder {
   shadowMapArray = [];
   fixedObjHolder = null;
   scene = null;
@@ -9,15 +13,15 @@ class ShadowMapHolder {
   constructor(scene) {
     this.scene = scene;
     const startingMap = this.scene.make.tilemap({
-      key: STARTING_TILEMAP,
-      tileWidth: TILE_WIDTH_HEIGHT,
-      tileHeight: TILE_WIDTH_HEIGHT,
+      key: constants.STARTING_TILEMAP,
+      tileWidth: constants.TILE_WIDTH_HEIGHT,
+      tileHeight: constants.TILE_WIDTH_HEIGHT,
     });
 
     //Filling the shadow array from start tilemap
-    for (var rowNo = SCENE_ROW_NO - 1; rowNo >= 0; rowNo--) {
+    for (var rowNo = constants.SCENE_ROW_NO - 1; rowNo >= 0; rowNo--) {
       var newRowArr = [];
-      for (var colNo = 0; colNo < SCENE_TILES_ROW_LEN; colNo++) {
+      for (var colNo = 0; colNo < constants.SCENE_TILES_ROW_LEN; colNo++) {
         newRowArr.push(startingMap.layer.data[rowNo][colNo].index);
       }
       this.shadowMapArray.push(newRowArr);
@@ -27,10 +31,10 @@ class ShadowMapHolder {
   } //END constructor(startingTileSetName)
 
   getShadowMap() {
-    while (this.shadowMapArray.length < SCENE_ROW_NO + 1) {
+    while (this.shadowMapArray.length < constants.SCENE_ROW_NO + 1) {
       this.generateNextRiverSections();
     }
-    return this.shadowMapArray.slice(0, SCENE_ROW_NO + 1);
+    return this.shadowMapArray.slice(0, constants.SCENE_ROW_NO + 1);
   }
 
   removeBottomRow() {
@@ -87,7 +91,7 @@ class ShadowMapHolder {
     console.log("debugPrintToConsole() :>> ", this.shadowMapArray);
     for (let rowNo = this.shadowMapArray.length - 1; rowNo >= 0; rowNo--) {
       var line2Print = zeroFill(rowNo, 2) + ": ";
-      for (let colNo = 0; colNo < SCENE_TILES_ROW_LEN; colNo++) {
+      for (let colNo = 0; colNo < constants.SCENE_TILES_ROW_LEN; colNo++) {
         var mapTile = this.shadowMapArray[rowNo][colNo];
         var outStr = this.debugChar(mapTile);
         line2Print += outStr;
@@ -109,9 +113,9 @@ class ShadowMapHolder {
         break;
 
       case 1: //Widen right bank
-        if (rightRiverBank > SCENE_TILES_ROW_LEN - 3) {
+        if (rightRiverBank > constants.SCENE_TILES_ROW_LEN - 3) {
           break;
-        } //if (rightRiverBank > (SCENE_ROW_NO - 1)) {
+        } 
         var interimRow = replaceValuesInArray(lastRow, rightRiverBank, 37, 53);
         this.shadowMapArray.push(interimRow);
         newRow = replaceValuesInArray(lastRow, rightRiverBank, 42, 49);
@@ -137,12 +141,7 @@ class ShadowMapHolder {
   } //rightBankDecision(leftRiverBank, rightRiverBank) {
 
   generateBridgeSection(leftRiverBank, rightRiverBank) {
-    // console.log("generateBridgeSection. leftRiverBank :>> ", leftRiverBank);
-    // console.log("generateBridgeSection. rightRiverBank :>> ", rightRiverBank);
-
     var lastRow = this.shadowMapArray[this.shadowMapArray.length - 1];
-    // console.log("lastRow   :>> ");
-    // this.debugPrintMapLine(lastRow);
     // TODO: rewrite this to use mapFragment - array of arrays with bridge tilemaps
     var interimRow = replaceValuesInArray(
       lastRow,
@@ -170,8 +169,8 @@ class ShadowMapHolder {
     // );
     // console.log("interimRow2 :>> ");
     // this.debugPrintMapLine(interimRow2);
-    let roadRow = new Array(SCENE_ROW_LEN);
-    roadRow.fill(74, 0, SCENE_ROW_LEN);
+    let roadRow = new Array(constants.SCENE_ROW_LEN);
+    roadRow.fill(74, 0, constants.SCENE_ROW_LEN);
     // console.log("roadRow :>> ", roadRow);
     let interimRow3 = replaceValuesInArray(
       roadRow,
@@ -179,8 +178,6 @@ class ShadowMapHolder {
       109,
       109
     );
-    // console.log("interimRow3 :>> ");
-    // this.debugPrintMapLine(interimRow3);
 
     let interimRow4 = replaceValuesInArray(
       interimRow,
@@ -192,11 +189,6 @@ class ShadowMapHolder {
       37,
       53
     );
-    // console.log("interimRow4 :>> ");
-    // this.debugPrintMapLine(interimRow4);
-
-    // console.log("interimRow5 :>> ");
-    // this.debugPrintMapLine(lastRow);
 
     this.shadowMapArray.push(interimRow);
     // this.shadowMapArray.push(interimRow2);
@@ -217,14 +209,14 @@ class ShadowMapHolder {
     let leftRiverBank = -1;
     let rightRiverBank = -1;
     let i = 0;
-    for (; i < SCENE_TILES_ROW_LEN; i++) {
+    for (; i < constants.SCENE_TILES_ROW_LEN; i++) {
       // console.log("lastRow[i] :>> ", lastRow[i]);
       if (lastRow[i] == 42) {
         leftRiverBank = i - 1;
         break;
       }
     }
-    for (; i < SCENE_TILES_ROW_LEN; i++) {
+    for (; i < constants.SCENE_TILES_ROW_LEN; i++) {
       if (lastRow[i] != 42) {
         rightRiverBank = i;
         break;

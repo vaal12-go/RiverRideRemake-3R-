@@ -1,9 +1,9 @@
-function getRandomInt(max) {
+export function getRandomInt(max) {
   //Generates random integer number from zero to (max-1)
   return Math.floor(Math.random() * max);
 }
 
-function fillArray(tileID) {
+export function fillArray(tileID) {
   var scrArr = [];
   for (var y = 0; y < SCENE_ROW_NO; y++) {
     scrArr.push([]);
@@ -15,7 +15,7 @@ function fillArray(tileID) {
   return scrArr;
 }
 
-function getTileArrayFromTileset(set_texture, tileWidth) {
+export function getTileArrayFromTileset(set_texture, tileWidth) {
   var row_len = set_texture.getSourceImage().width / tileWidth;
   var no_rows = set_texture.getSourceImage().height / tileWidth;
 
@@ -43,7 +43,7 @@ function getTileArrayFromTileset(set_texture, tileWidth) {
   return tileArr;
 } //getTileArrayFromTileset(set_texture) {
 
-function replaceValuesInArray(oldArray, startPos, ...replacingValues) {
+export function replaceValuesInArray(oldArray, startPos, ...replacingValues) {
   var newArr = oldArray.slice();
   for (let newVal of replacingValues) {
     newArr[startPos] = newVal;
@@ -52,11 +52,11 @@ function replaceValuesInArray(oldArray, startPos, ...replacingValues) {
   return newArr;
 }
 
-function zeroFill(num, len) {
+export function zeroFill(num, len) {
   return (Array(len).join("0") + num).slice(-len);
 }
 
-function addTextToScene(scene, str, x, y, color = "#aaaaaa") {
+export function addTextToScene(scene, str, x, y, color = "#aaaaaa") {
   return scene.add
     .text(x, y, str, {
       font: "14px Arial Narrow",
@@ -67,7 +67,7 @@ function addTextToScene(scene, str, x, y, color = "#aaaaaa") {
 }
 
 //This to be reworked with bobs (maybe?). Now usual text rendering will be used.
-function drawNumber(number) {
+export function drawNumber(number) {
   var num = number;
   var currDivider = 10;
   var digitArr = [];

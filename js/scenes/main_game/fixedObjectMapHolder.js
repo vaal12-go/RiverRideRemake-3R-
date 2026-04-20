@@ -1,4 +1,7 @@
-class FixedObjectMapHolder {
+import * as constants from "../../constants.js"
+import {getRandomInt} from '../../helpers.js'
+
+export class FixedObjectMapHolder {
   objectMapArray = [];
   scene = null;
   shadowTerrainMapHolder = null;
@@ -14,7 +17,6 @@ class FixedObjectMapHolder {
     this.scene = scene;
     this.shadowTerrainMapHolder = terrainMapHolder;
     this.generateObjects();
-    // this.debugPrint();
   }
 
   removeBottomRow() {
@@ -26,39 +28,24 @@ class FixedObjectMapHolder {
       this.shadowTerrainMapHolder.currentAbsRow >
       this.lastFuelGeneratedRow + this.MIN_ROWS_BETWEEN_FUEL
     ) {
-      // console.log("Will generate fuel :>> ");
       this.lastFuelGeneratedRow = this.shadowTerrainMapHolder.currentAbsRow;
 
       let lastRowBanks = this.shadowTerrainMapHolder.getRiverBanksCorrected();
-      // console.log("lastRowBanks :>> ", lastRowBanks);
       let penultimateRowBanks =
         this.shadowTerrainMapHolder.getRiverBanksCorrected(
           this.shadowTerrainMapHolder.shadowMapArray.length - 2
         );
-      // console.log("penultimateRowBanks :>> ", penultimateRowBanks);
       let proposedXPos = getRandomInt(penultimateRowBanks.riverWidth);
-      // console.log("proposedXPos :>> ", proposedXPos);
-      // console.log(
-      //   "this.shadowTerrainMapHolder.shadowMapArray :>> ",
-      //   this.shadowTerrainMapHolder.shadowMapArray
-      // );
-      // console.log(
-      //   "(this.objectMapArray.length - 1) :>> ",
-      //   this.objectMapArray.length - 1
-      // );
       if (this.objectMapArray.length - 1 > 3) {
         // So fuel is not generated at the bottom of the map
         let penultimateTerrainRow =
           this.shadowTerrainMapHolder.shadowMapArray[
             this.objectMapArray.length - 1
           ];
-        // console.log("penultimate row :>> ", penultimateTerrainRow);
-        // this.shadowTerrainMapHolder.debugPrintMapLine(penultimateTerrainRow);
         let proposedTerrainTile =
           penultimateTerrainRow[
             penultimateRowBanks.leftRiverBank + proposedXPos
           ];
-        // console.log("proposedTerrainTile :>> ", proposedTerrainTile);
         if (proposedTerrainTile == 42) {
           newRow[penultimateRowBanks.leftRiverBank + proposedXPos] = 1001;
         }
@@ -68,28 +55,19 @@ class FixedObjectMapHolder {
 
   generateEarthObjects(newRow) {
     //TODO: check undelying map tile if it is earth (#50) and not other tile
-    // console.log("generateEarthObjects :>> ");
     if (getRandomInt(3) != 1) {
       return;
     }
 
     let terrRowIdx = this.objectMapArray.length;
-    // console.log(
-    //   "this.shadowTerrainMapHolder.shadowMapArray.length :>> ",
-    //   this.shadowTerrainMapHolder.shadowMapArray.length
-    // );
-    // console.log(" terrRowIdx :>> ", terrRowIdx);
+    
     let terrainRow = this.shadowTerrainMapHolder.shadowMapArray[terrRowIdx];
-    // console.log("terrainRow :>> ", terrainRow);
-    // this.shadowTerrainMapHolder.debugPrintMapLine(terrainRow);
     let lastRowBanks = this.shadowTerrainMapHolder.getRiverBanks(
       this.objectMapArray.length
     );
-    // console.log("lastRowBanks :>> ", lastRowBanks);
     let proposedXPos = getRandomInt(
-      SCENE_TILES_ROW_LEN - lastRowBanks.riverWidth - 2
+      constants.SCENE_TILES_ROW_LEN - lastRowBanks.riverWidth - 2
     );
-    // console.log("proposedXPos :>> ", proposedXPos);
 
     let object2Insert = 60;
     switch (getRandomInt(6)) {
@@ -111,7 +89,6 @@ class FixedObjectMapHolder {
       default:
         return;
     }
-    // console.log("object2Insert :>> ", object2Insert);
 
     if (proposedXPos < lastRowBanks.leftRiverBank) {
       newRow[proposedXPos] = object2Insert;
@@ -121,29 +98,19 @@ class FixedObjectMapHolder {
         proposedXPos -
         lastRowBanks.leftRiverBank +
         2;
-      // console.log("idx :>> ", idx);
       newRow[idx] = object2Insert;
     }
   }
 
   generateObjects() {
-    // console.log(
-    //   "this.shadowTerrainMapHolder :>> ",
-    //   this.shadowTerrainMapHolder
-    // );
-    // console.log("this.objectMapArray.length :>> ", this.objectMapArray.length);
-    // console.log(
-    //   "this.shadowTerrainMapHolder.shadowMapArray.length :>> ",
-    //   this.shadowTerrainMapHolder.shadowMapArray.length
-    // );
     for (
       ;
       this.objectMapArray.length <
       this.shadowTerrainMapHolder.shadowMapArray.length;
 
     ) {
-      let newRow = new Array(SCENE_TILES_ROW_LEN);
-      newRow.fill(-1, 0, SCENE_TILES_ROW_LEN);
+      let newRow = new Array(constants.SCENE_TILES_ROW_LEN);
+      newRow.fill(-1, 0, constants.SCENE_TILES_ROW_LEN);
       this.generateFuel(newRow);
       this.generateEarthObjects(newRow);
 
@@ -164,5 +131,5 @@ class FixedObjectMapHolder {
       }
       console.log(`[${y}]:${rowStr}`);
     }
-  } //debugPrint() {
+  } 
 } //class ObjectMapHolder {

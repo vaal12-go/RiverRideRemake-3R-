@@ -1,5 +1,6 @@
-const DASHBOARD_HEIGHT = 100;
-class Dashboard {
+
+export const DASHBOARD_HEIGHT = 100;
+export class Dashboard {
   scene = null;
   bgDynamicTexture = null;
   bgTextureImage = null;

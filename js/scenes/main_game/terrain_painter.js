@@ -1,3 +1,6 @@
+import * as constants from "../../constants.js"
+import { ShadowMapHolder } from "./shadowMapHolder.js";
+
 export class TerrainPainter {
   scene = null;
   shadowMap = null;
@@ -35,9 +38,9 @@ export class TerrainPainter {
 
   createBobsRow(tileCodeArray, startingYPos) {
     var bobRow = [];
-    for (var colNo = 0; colNo < SCENE_TILES_ROW_LEN; colNo++) {
+    for (var colNo = 0; colNo < constants.SCENE_TILES_ROW_LEN; colNo++) {
       var bob = this.terrainBlitter.create(
-        colNo * TILE_WIDTH_HEIGHT,
+        colNo * constants.TILE_WIDTH_HEIGHT,
         startingYPos,
         this.framesArray[tileCodeArray[colNo] + 1]
       );
@@ -59,7 +62,7 @@ export class TerrainPainter {
     for (var rowNo = 0; rowNo < shMap.length; rowNo++) {
       var bobRow = this.createBobsRow(
         shMap[rowNo],
-        displayRowY - rowNo * TILE_WIDTH_HEIGHT
+        displayRowY - rowNo * constants.TILE_WIDTH_HEIGHT
       );
       this.terrainBobsCreated.push(...bobRow);
     }
@@ -76,8 +79,9 @@ export class TerrainPainter {
 
         // console.log("displayRowY :>> ", displayRowY);
         let bobCreated = null;
-        let bobXPos = tileNo * TILE_WIDTH_HEIGHT;
-        var bobYPos = this.scene.game.config.height - rowNo * TILE_WIDTH_HEIGHT;
+        let bobXPos = tileNo * constants.TILE_WIDTH_HEIGHT;
+        var bobYPos = this.scene.game.config.height - rowNo * 
+            constants.TILE_WIDTH_HEIGHT;
         if (tile > -1) {
           if (tile < 1000) {
             // Inserting tile from initial tileset

@@ -1,3 +1,7 @@
+// This class is no longer used. Planes, tanks will be sprites based 
+//  probably no need in blitting. Will be left as example of drawing 
+//  blits.
+
 class ObjectPainter {
   scene = null;
   terrainShadowMap = null;
