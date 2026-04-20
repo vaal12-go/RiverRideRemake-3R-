@@ -15,6 +15,13 @@ Very early development stage. Endless virtual map implemented (with dynamic rive
 
 
 Updates:
+* 2026Apr20 - 
+   * js files are moved to modules
+   * Creation of bulled via SpritesManager and correct y 
+   * offset calculation is implemented.
+   * PlayerPlane class manages plane behaivior
+   * Game initialization is moved to init_game.js.
+   * Small cleans
 * 2026Apr19 - better js file organization (modules). Dev notes initial version.
 * 04Mar2025 - other terrain (decorative) object generation + initial version of dynamic object display.
 * 26Feb2025 - added bridge generation
