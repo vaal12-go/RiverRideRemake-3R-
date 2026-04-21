@@ -1,3 +1,5 @@
+import { CAMERA_SCROLL_DELTA, SCENE_ROW_LEN } from "./constants.js";
+
 export function getRandomInt(max) {
   //Generates random integer number from zero to (max-1)
   return Math.floor(Math.random() * max);
@@ -34,8 +36,8 @@ export function getTileArrayFromTileset(set_texture, tileWidth) {
           x * tileWidth,
           y * tileWidth,
           tileWidth,
-          tileWidth
-        )
+          tileWidth,
+        ),
       );
       i++;
     } //for (var x = 0; x < row_len; x++) {
@@ -88,7 +90,7 @@ export function drawNumber(number) {
     this.fixed_plate.draw(
       this.towerDefenceTileArray[276 + digitArr[digit]],
       this.game.config.width - 200 + i * 32,
-      this.game.config.height - 100
+      this.game.config.height - 100,
     );
     i++;
   }
@@ -96,3 +98,63 @@ export function drawNumber(number) {
 
   // console.log('digitArr :>> ', digitArr);
 } //END drawNumber(number) {
+
+export function getNumberOfSpritesInScene(scene) {
+  // Source - https://stackoverflow.com/a/70903649
+  // Posted by winner_joiner, modified by community. See post 'Timeline' for change history
+  // Retrieved 2026-04-20, License - CC BY-SA 4.0
+
+  // where this = the current scene
+  let allSprites = scene.children.list.filter(
+    (x) => x instanceof Phaser.GameObjects.Sprite,
+  );
+  return allSprites.length;
+}
+
+// export function drawCross(scene, x, y) {
+//   // console.log("helpers:113 cameraScrollY::", cameraScrollY);
+//   // ln.visible = true;
+//   // ln2.visible = true;
+//   // const circ = scene.add.circle(x, y, 10, 0x00ff00).setOrigin(0.5, 0.5);
+// }
+
+export class HighlightPoint {
+  scene = null;
+  x = -100;
+  y = -100;
+  initialY = -100;
+  vertLineSprite = null;
+  horzLineSprite = null;
+  constructor(scene, x, y) {
+    this.scene = scene;
+    this.x = x;
+    this.y = y;
+    this.initialY = y;
+
+    this.vertLineSprite = scene.add
+      .line(x, y, 0, 0, 0, 20, 0xff0000)
+      .setOrigin(0.5, 0.5);
+    this.vertLineSprite.setLineWidth(1);
+
+    this.horzLineSprite = scene.add
+      .line(x, y, 0, 0, 20, 0, 0xff0000)
+      .setOrigin(0.5, 0.5);
+    this.horzLineSprite.setLineWidth(1);
+  }
+
+  update(cameraScrollY) {
+    if (cameraScrollY <= 0) {
+      this.vertLineSprite.y = this.initialY;
+      this.horzLineSprite.y = this.initialY;
+    } else {
+      this.vertLineSprite.y -= CAMERA_SCROLL_DELTA;
+      this.horzLineSprite.y -= CAMERA_SCROLL_DELTA;
+    }
+  }
+
+  destroy() {
+    console.log("High light point to be destroyed :>> ");
+    this.vertLineSprite.destroy();
+    this.horzLineSprite.destroy();
+  }
+}

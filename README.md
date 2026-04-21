@@ -15,6 +15,10 @@ Very early development stage. Endless virtual map implemented (with dynamic rive
 
 
 Updates:
+* 2026Apr21
+   * Bullets movement implemented
+   * Initial version of HighlightPoint class (for debugging)
+   * Cleaning of code
 * 2026Apr20 - 
    * js files are moved to modules
    * Creation of bulled via SpritesManager and correct y 

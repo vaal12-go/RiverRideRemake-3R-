@@ -96,12 +96,16 @@ export class ShadowMapHolder {
         var outStr = this.debugChar(mapTile);
         line2Print += outStr;
       }
-      console.log("line2Print :>> ", line2Print);
+      // console.log("line2Print :>> ", line2Print);
       let banks = this.getRiverBanks(rowNo);
       // console.log("banks :>> ", banks);
     }
     // console.log("shadowMapArray.length :>> ", this.shadowMapArray.length);
   } //END debugPrintToConsole() {
+
+  
+
+  // TODO: move generation of bridges and banks to separate file
 
   rightBankDecision(leftRiverBank, rightRiverBank) {
     var lastRow = this.shadowMapArray[this.shadowMapArray.length - 1];
@@ -248,17 +252,12 @@ export class ShadowMapHolder {
 
     let mapArrLenBefore = this.shadowMapArray.length;
     let lastRow = this.shadowMapArray[mapArrLenBefore - 1];
-    // console.log("leftRiverBank :>> ", leftRiverBank);
-    // console.log("rightRiverBank :>> ", rightRiverBank);
 
     if (riverWidth == 5) {
       if (
         this.currentAbsRow >
         this.lastBridgeGeneratedRow + this.MIN_ROWS_BETWEEN_BRIDGES
       ) {
-        // console.log("riverWidth  :>> ", riverWidth);
-
-        // console.log("Will make Bridge!! :>> ");
         this.generateBridgeSection(leftRiverBank, rightRiverBank);
         this.currentAbsRow += 5;
         this.lastBridgeGeneratedRow = this.currentAbsRow;

@@ -1,21 +1,13 @@
 import * as constants from "../../constants.js";
-import { getTileArrayFromTileset } from "../../helpers.js";
+import { getTileArrayFromTileset, HighlightPoint } from "../../helpers.js";
 import { TerrainPainter } from "./terrain_painter.js";
 import { SpritesManager } from "./spritesManager.js";
-
-// window.addEventListener("load", () => {
-//   // TODO: if this is necessary - this belongs in window initialization.
-//   console.log("window loaded :>> ");
-// });
 
 export class RiverRaidScene extends Phaser.Scene {
   towerDefenceTileTexture;
   towerDefenceTileArray;
   fixed_plate;
   fixed_plate_img;
-
-  // airplane_sprite;
-
   keyA;
   left_key;
   right_key;
@@ -28,13 +20,14 @@ export class RiverRaidScene extends Phaser.Scene {
   step_once = false;
   cycleNo;
 
-  terraPainter = null;
+  terrainPainter = null;
   dashboard = null;
   dbgText = null;
 
   positionalUpdatedObjectsArray = []; //All should have method update(cameraPosition)
-  // objectPainter = null;
   spritesManager = null;
+
+  PLANE_Y_POS = -10;
 
   preload() {
     this.load.image("bg1", "img/red.png");
@@ -61,9 +54,12 @@ export class RiverRaidScene extends Phaser.Scene {
   }
 
   create() {
+    // TODO: add debug console output, which will work depending on the file it is located in.
+    console.log("import.meta.url :>> ", import.meta.url);
     this.cycleNo = 0;
-    this.terraPainter = new TerrainPainter(this);
-    this.positionalUpdatedObjectsArray.push(this.terraPainter);
+    this.terrainPainter = new TerrainPainter(this);
+
+    this.positionalUpdatedObjectsArray.push(this.terrainPainter);
     // this.dashboard = new Dashboard(this);
     // this.positionalUpdatedObjectsArray.push(this.dashboard);
 
@@ -85,26 +81,17 @@ export class RiverRaidScene extends Phaser.Scene {
       64,
     );
 
-    // this.airplane_sprite = this.add
-    //   .sprite(
-    //     50,
-    //     50,
-    //     this.towerDefenceTileTexture,
-    //     this.towerDefenceTileArray[270],
-    //   )
-    //   .setOrigin(0.5);
-    // this.airplane_sprite.angle = -90;
-    // this.airplane_sprite.y = this.game.config.height - 150;
-    // this.airplane_sprite.x = (this.game.config.width - 32) / 2;
-
     this.spritesManager = new SpritesManager(this);
     this.positionalUpdatedObjectsArray.push(this.spritesManager);
 
+    this.PLANE_Y_POS = this.game.config.height - 150;
+    console.log("river_raid_scene:88 this.terrainPainter::", this.terrainPainter);
     this.spritesManager.createPlayerPlane(
       (this.game.config.width - 32) / 2,
-      this.game.config.height - 150,
+      this.PLANE_Y_POS,
       this.towerDefenceTileTexture,
       this.towerDefenceTileArray[270],
+      this.terrainPainter,
     );
 
     this.dbgText = this.add
@@ -127,34 +114,29 @@ export class RiverRaidScene extends Phaser.Scene {
     //Cursor keys:https://github.com/phaserjs/examples/blob/master/public/src/input/keyboard/cursor%20keys.js
     // this.cursors = this.input.keyboard.createCursorKeys();
 
-    //Keycodes: https://newdocs.phaser.io/docs/3.54.0/Phaser.Input.Keyboard.KeyCodes
+    //Keycodes: https://docs.phaser.io/api-documentation/namespace/input-keyboard-keycodes
     //Example: https://github.com/phaserjs/examples/blob/master/public/src/input/keyboard/add%20key.js
     this.keyA = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A);
-    // this.left_key = this.input.keyboard.addKey(
-    //   Phaser.Input.Keyboard.KeyCodes.LEFT,
-    // );
-    // this.right_key = this.input.keyboard.addKey(
-    //   Phaser.Input.Keyboard.KeyCodes.RIGHT,
-    // );
+
     this.space_key = this.input.keyboard.addKey(
       Phaser.Input.Keyboard.KeyCodes.SPACE,
     );
     this.pause_key = this.input.keyboard.addKey(
-      Phaser.Input.Keyboard.KeyCodes.ZERO,
+      Phaser.Input.Keyboard.KeyCodes.ENTER,
     );
     this.step_forward_key = this.input.keyboard.addKey(
       Phaser.Input.Keyboard.KeyCodes.NINE,
     );
 
-    var sceneObj = this;
+    // var sceneObj = this;
     this.pause_key.on("up", (event) => {
       if (this.debug_key_logging_enabled) console.log("key up :>> ");
-      sceneObj.game_paused = !sceneObj.game_paused;
+      this.game_paused = !this.game_paused;
     });
 
     this.step_forward_key.on("up", (event) => {
       if (this.debug_key_logging_enabled) console.log("Step key up :>> ");
-      sceneObj.step_once = true;
+      this.step_once = true;
     });
 
     this.space_key.on("down", (evt) => {
@@ -164,8 +146,8 @@ export class RiverRaidScene extends Phaser.Scene {
         const music = this.sound.add("gunShot");
         music.play();
       }
-
-      this.spritesManager.createBullet(200, 200);
+      const planeXPos = this.spritesManager.getPlayerPlanePosition();
+      this.spritesManager.createBullet(planeXPos + 1, this.PLANE_Y_POS - 34);
     }); //this.space_key.on("down", (evt)=> {
   }
 
@@ -175,19 +157,6 @@ export class RiverRaidScene extends Phaser.Scene {
   //     scrArr[getRandomInt(SCENE_ROW_NO)][getRandomInt(SCENE_ROW_LEN)] = 28;
   //   }
   // }
-
-  // processLongKeyPresses() {
-  //   if (this.left_key.isDown) {
-  //     if (this.debug_key_logging_enabled) console.log("left isdown :>> ");
-  //     // this.airplane_sprite.x = this.airplane_sprite.x - 2;
-  //     // this.airplane_sprite.angle = -100;
-  //   }
-
-  //   if (this.right_key.isDown) {
-  //     if (this.debug_key_logging_enabled) console.log("right isdown :>> ");
-  //     // this.airplane_sprite.x = this.airplane_sprite.x + 2;
-  //   }
-  // } //processLongKeyPresses() {
 
   draw_line_grid() {
     // Function to draw different auxillary lines/dots on the canvas
@@ -202,6 +171,8 @@ export class RiverRaidScene extends Phaser.Scene {
     }
   }
 
+  plainPoint = null;
+
   update() {
     this.dbgText.y = this.cameras.main.scrollY;
     this.dbgText.setText(`Frame ${this.cycleNo}`);
@@ -214,16 +185,11 @@ export class RiverRaidScene extends Phaser.Scene {
       this.step_once = false;
     }
 
-    // this.processLongKeyPresses();
-
     this.cycleNo += 1;
     if (this.cycleNo > 1000) this.cycleNo = 0;
-    // this.airplane_sprite.scaleY = 1;
-    // this.airplane_sprite.angle = -90;
 
     this.cameras.main.scrollY -= constants.CAMERA_SCROLL_DELTA;
     this.fixed_plate_img.y -= constants.CAMERA_SCROLL_DELTA;
-    // this.airplane_sprite.y -= constants.CAMERA_SCROLL_DELTA;
 
     for (let updObj of this.positionalUpdatedObjectsArray) {
       updObj.update(this.cameras.main.scrollY);
@@ -232,7 +198,22 @@ export class RiverRaidScene extends Phaser.Scene {
     if (this.cameras.main.scrollY <= 0) {
       this.cameras.main.scrollY = constants.TILE_WIDTH_HEIGHT;
       this.fixed_plate_img.y = this.game.config.height;
-      // this.airplane_sprite.y = this.game.config.height - 150;
     }
+
+    // drawCross(this, 
+    //   (this.game.config.width - 32) / 2,
+    //   this.PLANE_Y_POS);
+
+    if(this.plainPoint === null) {
+      this.plainPoint = new HighlightPoint(this, 
+        (this.game.config.width - 32) / 2,
+        this.PLANE_Y_POS);
+    } else {
+      if(this.cycleNo >= 5)
+        this.plainPoint.destroy();
+      else
+        this.plainPoint.update(this.cameras.main.scrollY);
+    }
+
   } //update() {
 } //class RiverRaidScene extends Phaser.Scene {

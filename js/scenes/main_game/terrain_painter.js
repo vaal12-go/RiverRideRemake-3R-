@@ -1,6 +1,8 @@
 import * as constants from "../../constants.js"
 import { ShadowMapHolder } from "./shadowMapHolder.js";
 
+
+// HIGH: clean this file
 export class TerrainPainter {
   scene = null;
   shadowMap = null;
@@ -57,10 +59,10 @@ export class TerrainPainter {
   }
 
   createTerrainBobs() {
-    var shMap = this.shadowMap.getShadowMap();
-    var displayRowY = this.scene.game.config.height;
+    const shMap = this.shadowMap.getShadowMap();
+    const displayRowY = this.scene.game.config.height;
     for (var rowNo = 0; rowNo < shMap.length; rowNo++) {
-      var bobRow = this.createBobsRow(
+      const bobRow = this.createBobsRow(
         shMap[rowNo],
         displayRowY - rowNo * constants.TILE_WIDTH_HEIGHT
       );
@@ -120,4 +122,18 @@ export class TerrainPainter {
       this.redrawBobs();
     }
   } //update(cameraPosition) {
+
+  // getShadowMap() {
+  //   return this.shadowMap;
+  // }
+  getTileTypeUnderScreenCoords(x, y, cameraOffset) {
+    const x_idx = Math.floor(x/constants.TILE_WIDTH_HEIGHT);
+    console.log("terrain_painter:129 x_idx::", x_idx);
+    const y_idx = Math.floor(y/constants.TILE_WIDTH_HEIGHT);
+    console.log("terrain_painter:131 y_idx::", y_idx);
+    const shMap = this.shadowMap.getShadowMap();
+    const tileType = shMap[y_idx][x_idx];
+    console.log("terrain_painter:134 tileType::", tileType);
+    return -100;
+  }
 } //class TerrainPainter {

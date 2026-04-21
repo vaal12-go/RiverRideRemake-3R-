@@ -1,4 +1,4 @@
-import {CAMERA_SCROLL_DELTA} from '../../../constants.js';
+import { CAMERA_SCROLL_DELTA } from "../../../constants.js";
 
 export class PlayerPlane {
   scene = null;
@@ -6,19 +6,26 @@ export class PlayerPlane {
   planeInitialY = -10;
   left_key = null;
   right_key = null;
+  terrainPainter = null;
+  currentCameraYOffset = -10;
 
-  constructor(scene, x, y, towerDefenceTileTexture, tileArrayItem) {
+  constructor(
+    scene,
+    x,
+    y,
+    towerDefenceTileTexture,
+    tileArrayItem,
+    terrainPainter,
+  ) {
     this.scene = scene;
-    // console.log("player_plane:7 towerDefenceTileTexture::", towerDefenceTileTexture);
-    // console.log("player_plane:8 tileArrayItem::", tileArrayItem);
+    console.log("player_plane:20 terrainPainter::", terrainPainter);
+    this.terrainPainter = terrainPainter;
 
     this.planeInitialY = y;
 
-    // console.log("player_plane:10 x::", x);
-    // console.log("player_plane:11 y::", y);
     this.planeSprite = this.scene.add
-      .sprite(50, 50, towerDefenceTileTexture, tileArrayItem)
-      .setOrigin(0.5);
+      .sprite(x, y, towerDefenceTileTexture, tileArrayItem)
+      .setOrigin(0.5, 0.5);
 
     this.planeSprite.angle = -90;
     this.planeSprite.x = x;
@@ -30,27 +37,37 @@ export class PlayerPlane {
     this.right_key = this.scene.input.keyboard.addKey(
       Phaser.Input.Keyboard.KeyCodes.RIGHT,
     );
-    // this.airplane_sprite.y = this.game.config.height - 150;
-    // this.airplane_sprite.x = (this.game.config.width - 32) / 2;
   }
 
   update(cameraYPos) {
-    // console.log("player_plane:20 cameraYPos::", cameraYPos);
+    this.currentCameraYOffset = cameraYPos;
     if (this.left_key.isDown) {
       if (this.debug_key_logging_enabled) console.log("left isdown :>> ");
-      this.planeSprite.x -= 2;
+      if (this.planeSprite.x >= 30) this.planeSprite.x -= 2;
     }
 
     if (this.right_key.isDown) {
       if (this.debug_key_logging_enabled) console.log("right isdown :>> ");
-      this.planeSprite.x += 2;
+      if (this.planeSprite.x <= 610) this.planeSprite.x += 2;
     }
 
-    if (cameraYPos <= 0) 
-        this.planeSprite.y = this.planeInitialY
-    else
-        this.planeSprite.y -= CAMERA_SCROLL_DELTA;
+    if (cameraYPos <= 0) this.planeSprite.y = this.planeInitialY;
+    else this.planeSprite.y -= CAMERA_SCROLL_DELTA;
+  }
 
+  collideWithMap() {
+    console.log("Collide with map started :>> ");
+    const plainX = this.planeSprite.x;
+    console.log("player_plane:58 plainX::", plainX);
+    const plainY = this.planeSprite.y;
+    console.log("player_plane:60 plainY::", plainY);
+    // console.log("player_plane:61 this.terrainPainter::", this.terrainPainter);
+    const tileUnderPlaneRight =
+      this.terrainPainter.getTileTypeUnderScreenCoords(
+        plainX, plainY, this.currentCameraYOffset);
+  }
 
+  getPosition() {
+    return this.planeSprite.x;
   }
 }
