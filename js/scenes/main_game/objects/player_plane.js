@@ -23,11 +23,12 @@ export class PlayerPlane {
 
     this.planeInitialY = y;
 
+    // this.planeSprite = this.scene.add
+    //   .sprite(x, y, towerDefenceTileTexture, tileArrayItem)
+    //   .setOrigin(0.5, 0.5);
     this.planeSprite = this.scene.add
-      .sprite(x, y, towerDefenceTileTexture, tileArrayItem)
+      .sprite(x, y, "player_plane")
       .setOrigin(0.5, 0.5);
-
-    this.planeSprite.angle = -90;
     this.planeSprite.x = x;
     this.planeSprite.y = y;
 
@@ -53,21 +54,28 @@ export class PlayerPlane {
 
     if (cameraYPos <= 0) this.planeSprite.y = this.planeInitialY;
     else this.planeSprite.y -= CAMERA_SCROLL_DELTA;
+    // console.log("player_plane:57 this.planeSprite.y::", this.planeSprite.y);
   }
 
   collideWithMap() {
-    console.log("Collide with map started :>> ");
+    // console.log("Collide with map started :>> ");
     const plainX = this.planeSprite.x;
-    console.log("player_plane:58 plainX::", plainX);
+    // console.log("player_plane:58 plainX::", plainX);
     const plainY = this.planeSprite.y;
-    console.log("player_plane:60 plainY::", plainY);
+    // console.log("player_plane:60 plainY::", plainY);
     // console.log("player_plane:61 this.terrainPainter::", this.terrainPainter);
+    // var plainPointY = this.planeSprite.y - (32 - this.cameras.main.scrollY);
+    // if(this.cameras.main.scrollY <= 0) {
+    //   highLightPointY = this.PLANE_Y_POS;
+    // }
     const tileUnderPlaneRight =
-      this.terrainPainter.getTileTypeUnderScreenCoords(
-        plainX, plainY, this.currentCameraYOffset);
+      this.terrainPainter.getTileTypeUnderScreenCoords(plainX, plainY);
   }
 
   getPosition() {
-    return this.planeSprite.x;
+    return {
+      x: this.planeSprite.x,
+      y: this.planeSprite.y,
+    };
   }
 }

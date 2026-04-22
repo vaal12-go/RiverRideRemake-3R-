@@ -67,7 +67,7 @@ export class SpritesManager {
   }
 
   getPlayerPlanePosition() {
-    console.log("this. :>> ", this.playerPlane.getPosition());
+    // console.log("this. :>> ", this.playerPlane.getPosition());
     return this.playerPlane.getPosition();
   }
 }

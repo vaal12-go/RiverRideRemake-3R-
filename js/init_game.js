@@ -12,7 +12,7 @@ export function initGame() {
           parent: "phaser-game-parent",
           // zoom: 1,
           roundPixels: false,
-          // pixelArt: true
+          // pixelArt: true,
           render: {
             //pixelArt: true, // enabling this appears to "fix" it
             antialias: false,

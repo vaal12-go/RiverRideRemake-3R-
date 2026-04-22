@@ -15,6 +15,10 @@ Very early development stage. Endless virtual map implemented (with dynamic rive
 
 
 Updates:
+* 2026Apr22
+   * map tile under plane is calculated
+   * Explosion animation from atlas images is working
+   * Smaller bullets and player plain.
 * 2026Apr21
    * Bullets movement implemented
    * Initial version of HighlightPoint class (for debugging)

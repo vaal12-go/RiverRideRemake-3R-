@@ -143,6 +143,8 @@ export class HighlightPoint {
   }
 
   update(cameraScrollY) {
+    // console.log("helpers:146 cameraScrollY::", cameraScrollY);
+    // console.log("helpers:147 this.initialY::", this.initialY);
     if (cameraScrollY <= 0) {
       this.vertLineSprite.y = this.initialY;
       this.horzLineSprite.y = this.initialY;
@@ -150,11 +152,14 @@ export class HighlightPoint {
       this.vertLineSprite.y -= CAMERA_SCROLL_DELTA;
       this.horzLineSprite.y -= CAMERA_SCROLL_DELTA;
     }
+    // console.log("helpers:154 this.vertLineSprite.y::", this.vertLineSprite.y);
   }
 
   destroy() {
-    console.log("High light point to be destroyed :>> ");
+    // console.log("High light point to be destroyed :>> ");
+    this.vertLineSprite.Visible = false;
     this.vertLineSprite.destroy();
+    this.horzLineSprite.Visible = false;
     this.horzLineSprite.destroy();
   }
 }

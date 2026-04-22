@@ -64,7 +64,6 @@ export class ShadowMapHolder {
         return "L";
       case 53:
         return "J";
-
       case 63:
         return "\\";
       case 61:

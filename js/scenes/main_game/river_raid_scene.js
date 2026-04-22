@@ -23,11 +23,14 @@ export class RiverRaidScene extends Phaser.Scene {
   terrainPainter = null;
   dashboard = null;
   dbgText = null;
+  cameraYDBGText = null;
 
   positionalUpdatedObjectsArray = []; //All should have method update(cameraPosition)
   spritesManager = null;
 
   PLANE_Y_POS = -10;
+
+  explosion_sprite = null;
 
   preload() {
     this.load.image("bg1", "img/red.png");
@@ -37,7 +40,8 @@ export class RiverRaidScene extends Phaser.Scene {
     this.load.image("fuel_gauge", "img/FuelGauge.png");
     this.load.image("fuel_tank", "img/fuel/Fuel_29Feb2025.png");
     this.load.image("jet", "img/jet/detailed_jet.png");
-    this.load.image("bullet", "img/bullet.png");
+    this.load.image("bullet", "img/bullet_small.png");
+    this.load.image("player_plane", "img/PlayerPlane_40x40.png");
     this.load.audio("gunShot", [
       "audio/Beefy-AR10-7.62x51-308-Close-Single-Gunshot-B.mp3",
     ]);
@@ -68,7 +72,35 @@ export class RiverRaidScene extends Phaser.Scene {
     console.log("this.game.config.height :>> ", this.game.config.height);
     console.log("this.game.config.width :>> ", this.game.config.width);
 
-    this.cameras.main.scrollY = constants.TILE_WIDTH_HEIGHT;
+    this.explosion_sprite = this.add.sprite(100, 300, "fuel_gauge");
+
+    // const frms = this.anims.generateFrameNames("terrain_atlas", {
+    //   prefix: "sprite",
+    //   start: 5,
+    //   end: 9,
+    // });
+
+    const frms = this.anims.generateFrameNames("terrain_atlas", {
+      frames: ['sprite5','sprite6','sprite7','sprite8', 'sprite9', 'sprite112'],
+    });
+
+    console.log("river_raid_scene:77 frms::", frms);
+    // https://generalistprogrammer.com/tutorials/phaser-animation-sprite-sheet-guide
+    this.explosion_sprite.anims.create({
+      key: "explosion",
+      frames: frms,
+      frameRate: 4,
+      repeat: 0, // -1 = infinite loop
+      // duration: 1000,
+    });
+
+    // Play idle by default
+
+    this.explosion_sprite.anims.play("explosion");
+
+    // this.cameras.main.scrollY = constants.TILE_WIDTH_HEIGHT
+    this.cameras.main.scrollY = 0;
+
     this.fixed_plate_img = this.add
       .image(0, this.game.config.height, this.fixed_plate)
       .setOrigin(0);
@@ -85,7 +117,10 @@ export class RiverRaidScene extends Phaser.Scene {
     this.positionalUpdatedObjectsArray.push(this.spritesManager);
 
     this.PLANE_Y_POS = this.game.config.height - 150;
-    console.log("river_raid_scene:88 this.terrainPainter::", this.terrainPainter);
+    console.log(
+      "river_raid_scene:88 this.terrainPainter::",
+      this.terrainPainter,
+    );
     this.spritesManager.createPlayerPlane(
       (this.game.config.width - 32) / 2,
       this.PLANE_Y_POS,
@@ -96,12 +131,21 @@ export class RiverRaidScene extends Phaser.Scene {
 
     this.dbgText = this.add
       .text(20, 20, "Move the mouse", {
-        font: "16px Courier",
+        font: "12px Courier",
+        fill: "#000000",
+      })
+      .setOrigin(0);
+
+    this.cameraYDBGText = this.add
+      .text(20, 50, "qwe1", {
+        font: "12px Courier",
         fill: "#000000",
       })
       .setOrigin(0);
 
     this.initInputs();
+
+    const point10 = new HighlightPoint(this, 10, 10);
 
     // this.dbgText.y = this.cameras.main.scrollY;
     // this.dbgText.setText(
@@ -176,6 +220,10 @@ export class RiverRaidScene extends Phaser.Scene {
   update() {
     this.dbgText.y = this.cameras.main.scrollY;
     this.dbgText.setText(`Frame ${this.cycleNo}`);
+    this.cameraYDBGText.y = this.cameras.main.scrollY + 20;
+    this.cameraYDBGText.setText(
+      `Camera scrollY - ${this.cameras.main.scrollY}`,
+    );
 
     if (this.game_paused && !this.step_once) {
       return;
@@ -188,32 +236,36 @@ export class RiverRaidScene extends Phaser.Scene {
     this.cycleNo += 1;
     if (this.cycleNo > 1000) this.cycleNo = 0;
 
-    this.cameras.main.scrollY -= constants.CAMERA_SCROLL_DELTA;
-    this.fixed_plate_img.y -= constants.CAMERA_SCROLL_DELTA;
-
     for (let updObj of this.positionalUpdatedObjectsArray) {
       updObj.update(this.cameras.main.scrollY);
     }
 
+    if (this.plainPoint !== null) {
+      this.plainPoint.destroy();
+    }
+
+    const planePosX = this.spritesManager.getPlayerPlanePosition().x;
+    // console.log("river_raid_scene:201 planePosX::", planePosX);
+    var highLightPointY = this.PLANE_Y_POS - (32 - this.cameras.main.scrollY);
     if (this.cameras.main.scrollY <= 0) {
-      this.cameras.main.scrollY = constants.TILE_WIDTH_HEIGHT;
-      this.fixed_plate_img.y = this.game.config.height;
+      highLightPointY = this.PLANE_Y_POS;
     }
+    this.plainPoint = new HighlightPoint(
+      this,
+      planePosX,
+      // highLightPointY
+      this.spritesManager.getPlayerPlanePosition().y,
+    );
 
-    // drawCross(this, 
-    //   (this.game.config.width - 32) / 2,
-    //   this.PLANE_Y_POS);
+    // console.log("river_raid_scene:222 highLightPointY::", highLightPointY);
 
-    if(this.plainPoint === null) {
-      this.plainPoint = new HighlightPoint(this, 
-        (this.game.config.width - 32) / 2,
-        this.PLANE_Y_POS);
+    // this should be in the end of the update as this sets new camera scroll
+    if (this.cameras.main.scrollY <= 0) {
+      this.cameras.main.scrollY =
+        constants.TILE_WIDTH_HEIGHT - constants.CAMERA_SCROLL_DELTA;
+      // this.fixed_plate_img.y = this.game.config.height;
     } else {
-      if(this.cycleNo >= 5)
-        this.plainPoint.destroy();
-      else
-        this.plainPoint.update(this.cameras.main.scrollY);
+      this.cameras.main.scrollY -= constants.CAMERA_SCROLL_DELTA;
     }
-
   } //update() {
 } //class RiverRaidScene extends Phaser.Scene {

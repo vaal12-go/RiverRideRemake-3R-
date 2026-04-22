@@ -1,6 +1,5 @@
-import * as constants from "../../constants.js"
+import * as constants from "../../constants.js";
 import { ShadowMapHolder } from "./shadowMapHolder.js";
-
 
 // HIGH: clean this file
 export class TerrainPainter {
@@ -27,7 +26,7 @@ export class TerrainPainter {
     for (let spriteNo = 1; spriteNo <= 120; spriteNo++) {
       var newFrame = this.scene.textures.getFrame(
         "terrain_atlas",
-        `sprite${spriteNo}`
+        `sprite${spriteNo}`,
       );
       this.framesArray.push(newFrame);
     } //for (let spriteNo = 1; spriteNo <= 120; spriteNo++) {
@@ -44,7 +43,7 @@ export class TerrainPainter {
       var bob = this.terrainBlitter.create(
         colNo * constants.TILE_WIDTH_HEIGHT,
         startingYPos,
-        this.framesArray[tileCodeArray[colNo] + 1]
+        this.framesArray[tileCodeArray[colNo] + 1],
       );
       bobRow.push(bob);
     }
@@ -64,7 +63,7 @@ export class TerrainPainter {
     for (var rowNo = 0; rowNo < shMap.length; rowNo++) {
       const bobRow = this.createBobsRow(
         shMap[rowNo],
-        displayRowY - rowNo * constants.TILE_WIDTH_HEIGHT
+        displayRowY - rowNo * constants.TILE_WIDTH_HEIGHT,
       );
       this.terrainBobsCreated.push(...bobRow);
     }
@@ -82,15 +81,15 @@ export class TerrainPainter {
         // console.log("displayRowY :>> ", displayRowY);
         let bobCreated = null;
         let bobXPos = tileNo * constants.TILE_WIDTH_HEIGHT;
-        var bobYPos = this.scene.game.config.height - rowNo * 
-            constants.TILE_WIDTH_HEIGHT;
+        var bobYPos =
+          this.scene.game.config.height - rowNo * constants.TILE_WIDTH_HEIGHT;
         if (tile > -1) {
           if (tile < 1000) {
             // Inserting tile from initial tileset
             bobCreated = this.terrainBlitter.create(
               bobXPos,
               bobYPos,
-              this.framesArray[tile + 1]
+              this.framesArray[tile + 1],
             );
           } else {
             switch (tile) {
@@ -126,14 +125,27 @@ export class TerrainPainter {
   // getShadowMap() {
   //   return this.shadowMap;
   // }
-  getTileTypeUnderScreenCoords(x, y, cameraOffset) {
-    const x_idx = Math.floor(x/constants.TILE_WIDTH_HEIGHT);
-    console.log("terrain_painter:129 x_idx::", x_idx);
-    const y_idx = Math.floor(y/constants.TILE_WIDTH_HEIGHT);
-    console.log("terrain_painter:131 y_idx::", y_idx);
+  getTileTypeUnderScreenCoords(x, y) {
+    const x_idx = Math.floor(x / constants.TILE_WIDTH_HEIGHT);
+    // console.log("terrain_painter:129 x_idx::", x_idx);
     const shMap = this.shadowMap.getShadowMap();
+    // console.log("terrain_painter:132 shMap.length::", shMap.length);
+    // console.log("terrain_painter:133 Math.floor(y/constants.TILE_WIDTH_HEIGHT);::", Math.floor(y / constants.TILE_WIDTH_HEIGHT));
+    const y_idx = shMap.length - 
+      Math.floor(y / constants.TILE_WIDTH_HEIGHT) -1;
+    // console.log("terrain_painter:131 y_idx::", y_idx);
+
+    // this.shadowMap.debugPrintMapLine(shMap[y_idx]);
+    // for (var y = shMap.length - 1; y >= 0; y--) {
+    //   // console.log("y :>> ", y);
+    //   this.shadowMap.debugPrintMapLine(shMap[y]);
+    // }
+    // console.log("Current line :>> ");
+    // this.shadowMap.debugPrintMapLine(shMap[y_idx]);
     const tileType = shMap[y_idx][x_idx];
-    console.log("terrain_painter:134 tileType::", tileType);
+    // this.shadowMap.debugPrintMapLine(shMap[y_idx]);
+    // console.log('shMap[y_idx] :>> ', shMap[y_idx]);
+    // console.log("terrain_painter:134 tileType::", tileType);
     return -100;
   }
 } //class TerrainPainter {
