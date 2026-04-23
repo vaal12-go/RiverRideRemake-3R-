@@ -72,7 +72,7 @@ export class RiverRaidScene extends Phaser.Scene {
     console.log("this.game.config.height :>> ", this.game.config.height);
     console.log("this.game.config.width :>> ", this.game.config.width);
 
-    this.explosion_sprite = this.add.sprite(100, 300, "fuel_gauge");
+    // this.explosion_sprite = this.add.sprite(100, 300, "fuel_gauge");
 
     // const frms = this.anims.generateFrameNames("terrain_atlas", {
     //   prefix: "sprite",
@@ -84,19 +84,18 @@ export class RiverRaidScene extends Phaser.Scene {
       frames: ['sprite5','sprite6','sprite7','sprite8', 'sprite9', 'sprite112'],
     });
 
-    console.log("river_raid_scene:77 frms::", frms);
+    // console.log("river_raid_scene:77 frms::", frms);
     // https://generalistprogrammer.com/tutorials/phaser-animation-sprite-sheet-guide
-    this.explosion_sprite.anims.create({
-      key: "explosion",
-      frames: frms,
-      frameRate: 4,
-      repeat: 0, // -1 = infinite loop
-      // duration: 1000,
-    });
+    // this.explosion_sprite.anims.create({
+    //   key: "explosion",
+    //   frames: frms,
+    //   frameRate: 4,
+    //   repeat: 0, // -1 = infinite loop
+    //   // duration: 1000,
+    // });
 
-    // Play idle by default
 
-    this.explosion_sprite.anims.play("explosion");
+    // this.explosion_sprite.anims.play("explosion");
 
     // this.cameras.main.scrollY = constants.TILE_WIDTH_HEIGHT
     this.cameras.main.scrollY = 0;
@@ -239,6 +238,15 @@ export class RiverRaidScene extends Phaser.Scene {
     for (let updObj of this.positionalUpdatedObjectsArray) {
       updObj.update(this.cameras.main.scrollY);
     }
+
+    if(!this.spritesManager.collidePlayerPlane()) {
+      console.log('Game will be paused and GameEndScene called :>> ');
+
+      this.game_paused = true;
+      this.scene.launch("game_end");  
+
+    }
+      
 
     if (this.plainPoint !== null) {
       this.plainPoint.destroy();

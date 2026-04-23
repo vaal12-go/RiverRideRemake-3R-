@@ -146,6 +146,6 @@ export class TerrainPainter {
     // this.shadowMap.debugPrintMapLine(shMap[y_idx]);
     // console.log('shMap[y_idx] :>> ', shMap[y_idx]);
     // console.log("terrain_painter:134 tileType::", tileType);
-    return -100;
+    return tileType;
   }
 } //class TerrainPainter {

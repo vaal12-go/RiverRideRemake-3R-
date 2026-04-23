@@ -118,6 +118,29 @@ export function getNumberOfSpritesInScene(scene) {
 //   // const circ = scene.add.circle(x, y, 10, 0x00ff00).setOrigin(0.5, 0.5);
 // }
 
+export function createExplosion(scene, x, y) {
+  const explAnimation = scene.add.sprite(x, y, "fuel_gauge");
+
+  explAnimation.anims.create({
+    key: "explosion",
+    frames: scene.anims.generateFrameNames("terrain_atlas", {
+      frames: [
+        "sprite5",
+        "sprite6",
+        "sprite7",
+        "sprite8",
+        "sprite9",
+        "sprite112",
+      ],
+    }),
+    frameRate: 4,
+    repeat: 0, // -1 = infinite loop
+    // duration: 1000,
+  });
+
+  explAnimation.anims.play("explosion")
+}
+
 export class HighlightPoint {
   scene = null;
   x = -100;

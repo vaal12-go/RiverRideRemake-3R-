@@ -13,6 +13,11 @@ export class SpritesManager {
     // this.bulletSprite = this.scene.add.sprite(50, 50, 'bullet').setOrigin(0.5);
   }
 
+  collidePlayerPlane() {
+    if(!this.playerPlane.collideWithMap()) return false;
+    return true;
+  }
+
   update(cameraYPos) {
     for (var sprIdx in this.spriteArray) {
       const currSprite = this.spriteArray[sprIdx];
@@ -32,14 +37,13 @@ export class SpritesManager {
         }
       } //if(currSprite.constructor.name == "Bullet") {
 
-      console.log(
-        "spritesManager:35 currSprite.constructor.name::",
-        currSprite.constructor.name,
-      );
+      // console.log(
+      //   "spritesManager:35 currSprite.constructor.name::",
+      //   currSprite.constructor.name,
+      // );
     } //for (var sprIdx in this.spriteArray) {
 
     this.playerPlane.update(cameraYPos);
-    this.playerPlane.collideWithMap();
   }
 
   createBullet(x, y) {

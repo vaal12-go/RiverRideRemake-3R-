@@ -1,4 +1,5 @@
 import { CAMERA_SCROLL_DELTA } from "../../../constants.js";
+import {createExplosion} from "../../../helpers.js";
 
 export class PlayerPlane {
   scene = null;
@@ -58,7 +59,7 @@ export class PlayerPlane {
   }
 
   collideWithMap() {
-    // console.log("Collide with map started :>> ");
+    if(!this.planeSprite.visible) return;
     const plainX = this.planeSprite.x;
     // console.log("player_plane:58 plainX::", plainX);
     const plainY = this.planeSprite.y;
@@ -68,8 +69,17 @@ export class PlayerPlane {
     // if(this.cameras.main.scrollY <= 0) {
     //   highLightPointY = this.PLANE_Y_POS;
     // }
-    const tileUnderPlaneRight =
+    const tileUnderPlane =
       this.terrainPainter.getTileTypeUnderScreenCoords(plainX, plainY);
+    console.log("player_plane:73 tileUnderPlane::", tileUnderPlane);
+
+    if(tileUnderPlane != 42) {
+      createExplosion(this.scene, plainX, plainY);
+      this.planeSprite.visible = false;
+      return false;
+    }
+
+    return true;
   }
 
   getPosition() {

@@ -15,6 +15,10 @@ Very early development stage. Endless virtual map implemented (with dynamic rive
 
 
 Updates:
+* 2026Apr23
+   * Explosion animation when plane hits non-water tile
+   * Game pauses and "game end" scene is displayed.
+   * Local game font added and used for "game end" scene.
 * 2026Apr22
    * map tile under plane is calculated
    * Explosion animation from atlas images is working
