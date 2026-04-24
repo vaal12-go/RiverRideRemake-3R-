@@ -6,7 +6,7 @@ export function initGame() {
   console.log("Hello from initGame :>> ");
   window.onload = () => {
     const config = {
-      renderType: Phaser.CANVAS,
+      renderType: Phaser.AUTO,
       width: 20 * TILE_WIDTH_HEIGHT, //640, //20 tiles of 32px
       height: 864, //27 tiles of 32px
       scene: [

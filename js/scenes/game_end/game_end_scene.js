@@ -10,20 +10,58 @@ export class GameEndScene extends Phaser.Scene {
     );
   }
   create() {
+
+    const scene = this;
+
+
     console.log("Game end create called :>> ");
     this.gameEndText = this.add
       .text(
         this.game.config.width / 2,
-        this.game.config.height / 2,
+        this.game.config.height / 2-70,
         "Game end ",
         {
-          font: "84px Vipnagorgialla",
+          font: "84px",
+          fontFamily: "Vipnagorgialla",
           fill: "#ff0000",
-          color: "#00ff00",
-          align: "right",
+          color: "#ff0000",
+          align: "center",
+          fixedWidth: 450,
         },
       )
+      .setPadding(12)
       .setOrigin(0.5);
+
+    const button = this.add
+      .text(
+        this.game.config.width / 2,
+        this.game.config.height / 2+50, "New Game", {
+        fontFamily: "Vipnagorgialla",
+        fontSize: "32px",
+        color: "#ffffff",
+        align: "center",
+        fixedWidth: 300,
+        backgroundColor: "#2d2d2d",
+      })
+      .setPadding(32)
+      .setOrigin(0.5);
+
+    button.setInteractive({ useHandCursor: true });
+
+    button.on("pointerover", () => {
+      button.setBackgroundColor("#8d8d8d");
+    });
+
+    button.on("pointerout", () => {
+      button.setBackgroundColor("#2d2d2d");
+    });
+
+    button.on("pointerdown", function (pointer) {
+      console.log("New game clicked :>> ");
+    //   this.scene.stop("game_end");
+    //   this.scene.stop("river_raid_game");
+      scene.scene.start("river_raid_game");
+    });
 
     // const boundsObj = this.gameEndText.getBounds();
     // this.gameEndText.x = this.game.config.width / 2;
@@ -42,7 +80,7 @@ export class GameEndScene extends Phaser.Scene {
 
     // console.log(this.gameEndText.getBounds());
 
-    const scene = this;
+    
 
     // WebFont.load({
     //   google: {
