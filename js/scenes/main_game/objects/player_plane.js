@@ -71,7 +71,7 @@ export class PlayerPlane {
     // }
     const tileUnderPlane =
       this.terrainPainter.getTileTypeUnderScreenCoords(plainX, plainY);
-    console.log("player_plane:73 tileUnderPlane::", tileUnderPlane);
+    // console.log("player_plane:73 tileUnderPlane::", tileUnderPlane);
 
     if(tileUnderPlane != 42) {
       createExplosion(this.scene, plainX, plainY);

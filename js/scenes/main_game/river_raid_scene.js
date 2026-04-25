@@ -112,7 +112,8 @@ export class RiverRaidScene extends Phaser.Scene {
       64,
     );
 
-    this.spritesManager = new SpritesManager(this);
+    this.spritesManager = new SpritesManager(
+      this, this.terrainPainter);
     this.positionalUpdatedObjectsArray.push(this.spritesManager);
 
     this.PLANE_Y_POS = this.game.config.height - 150;
@@ -190,7 +191,8 @@ export class RiverRaidScene extends Phaser.Scene {
         music.play();
       }
       const planeXPos = this.spritesManager.getPlayerPlanePosition();
-      this.spritesManager.createBullet(planeXPos + 1, this.PLANE_Y_POS - 34);
+      this.spritesManager.createBullet(
+        planeXPos.x + 1, this.PLANE_Y_POS - 34);
     }); //this.space_key.on("down", (evt)=> {
   }
 
@@ -240,20 +242,16 @@ export class RiverRaidScene extends Phaser.Scene {
     }
 
     if(!this.spritesManager.collidePlayerPlane()) {
-      console.log('Game will be paused and GameEndScene called :>> ');
-
+      // console.log('Game will be paused and GameEndScene called :>> ');
       this.game_paused = true;
       this.scene.launch("game_end");  
-
     }
-      
 
     if (this.plainPoint !== null) {
       this.plainPoint.destroy();
     }
 
     const planePosX = this.spritesManager.getPlayerPlanePosition().x;
-    // console.log("river_raid_scene:201 planePosX::", planePosX);
     var highLightPointY = this.PLANE_Y_POS - (32 - this.cameras.main.scrollY);
     if (this.cameras.main.scrollY <= 0) {
       highLightPointY = this.PLANE_Y_POS;
@@ -261,7 +259,6 @@ export class RiverRaidScene extends Phaser.Scene {
     this.plainPoint = new HighlightPoint(
       this,
       planePosX,
-      // highLightPointY
       this.spritesManager.getPlayerPlanePosition().y,
     );
 
@@ -271,7 +268,6 @@ export class RiverRaidScene extends Phaser.Scene {
     if (this.cameras.main.scrollY <= 0) {
       this.cameras.main.scrollY =
         constants.TILE_WIDTH_HEIGHT - constants.CAMERA_SCROLL_DELTA;
-      // this.fixed_plate_img.y = this.game.config.height;
     } else {
       this.cameras.main.scrollY -= constants.CAMERA_SCROLL_DELTA;
     }

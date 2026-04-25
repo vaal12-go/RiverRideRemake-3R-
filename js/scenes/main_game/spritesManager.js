@@ -7,8 +7,10 @@ export class SpritesManager {
   scene = null;
   bulletSprite = null;
   playerPlane = null;
-  constructor(scene) {
+  terrainPainter = null;
+  constructor(scene, terrainPainter) {
     this.scene = scene;
+    this.terrainPainter = terrainPainter;
     // this.scene.load.image('bullet', '../../../img/bullet.png');
     // this.bulletSprite = this.scene.add.sprite(50, 50, 'bullet').setOrigin(0.5);
   }
@@ -21,7 +23,7 @@ export class SpritesManager {
   update(cameraYPos) {
     for (var sprIdx in this.spriteArray) {
       const currSprite = this.spriteArray[sprIdx];
-      console.log("spritesManager:20 currSprite::", currSprite);
+      // console.log("spritesManager:20 currSprite::", currSprite);
       if (currSprite.constructor.name == "Bullet") {
         if (currSprite.update(cameraYPos)) {
           // If update returns true, this means that this sprite no
@@ -29,26 +31,23 @@ export class SpritesManager {
           //    from the list.
           const b1 = currSprite;
           this.spriteArray.splice(sprIdx, 1);
-          // console.log(
-          //   "spritesManager:21 this.spriteArray.length::",
-          //   this.spriteArray.length,
-          // );
-          // b1.destroy();
         }
       } //if(currSprite.constructor.name == "Bullet") {
-
-      // console.log(
-      //   "spritesManager:35 currSprite.constructor.name::",
-      //   currSprite.constructor.name,
-      // );
+      else {
+        this.spriteArray.splice(sprIdx, 1);
+      }
     } //for (var sprIdx in this.spriteArray) {
 
     this.playerPlane.update(cameraYPos);
   }
 
   createBullet(x, y) {
-    this.spriteArray.push(new Bullet(this.scene, x, y));
-    // console.log("spritesManager:26 this.spriteArray::", this.spriteArray);
+    console.log("spritesManager:45 this.terrainPainter::", this.terrainPainter);
+    this.spriteArray.push(new Bullet(
+      this.scene, x, y, this.terrainPainter));
+    console.log("spritesManager:41 x::", x);
+    console.log("spritesManager:42 y::", y);
+    console.log("spritesManager:26 createBullet");
   }
 
   createPlayerPlane(
@@ -58,6 +57,7 @@ export class SpritesManager {
     tileArrayItem,
     terrainPainter,
   ) {
+    // TODO: remove terrainPainter from this call - it is supplied in constructor
     this.playerPlane = new PlayerPlane(
       this.scene,
       x,

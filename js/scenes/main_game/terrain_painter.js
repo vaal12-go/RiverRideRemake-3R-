@@ -127,13 +127,15 @@ export class TerrainPainter {
   // }
   getTileTypeUnderScreenCoords(x, y) {
     const x_idx = Math.floor(x / constants.TILE_WIDTH_HEIGHT);
-    // console.log("terrain_painter:129 x_idx::", x_idx);
+    console.log("terrain_painter:130 x::", x);
+    console.log("terrain_painter:129 x_idx::", x_idx);
     const shMap = this.shadowMap.getShadowMap();
     // console.log("terrain_painter:132 shMap.length::", shMap.length);
     // console.log("terrain_painter:133 Math.floor(y/constants.TILE_WIDTH_HEIGHT);::", Math.floor(y / constants.TILE_WIDTH_HEIGHT));
-    const y_idx = shMap.length - 
-      Math.floor(y / constants.TILE_WIDTH_HEIGHT) -1;
-    // console.log("terrain_painter:131 y_idx::", y_idx);
+    const y_idx =
+      shMap.length - Math.floor(y / constants.TILE_WIDTH_HEIGHT) - 1;
+    console.log("terrain_painter:137 y::", y);
+    console.log("terrain_painter:131 y_idx::", y_idx);
 
     // this.shadowMap.debugPrintMapLine(shMap[y_idx]);
     // for (var y = shMap.length - 1; y >= 0; y--) {
