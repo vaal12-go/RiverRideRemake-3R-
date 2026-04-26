@@ -243,8 +243,8 @@ export class RiverRaidScene extends Phaser.Scene {
 
     if(!this.spritesManager.collidePlayerPlane()) {
       // console.log('Game will be paused and GameEndScene called :>> ');
-      this.game_paused = true;
-      this.scene.launch("game_end");  
+      // this.game_paused = true;
+      // this.scene.launch("game_end");  
     }
 
     if (this.plainPoint !== null) {

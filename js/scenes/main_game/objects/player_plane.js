@@ -19,7 +19,7 @@ export class PlayerPlane {
     terrainPainter,
   ) {
     this.scene = scene;
-    console.log("player_plane:20 terrainPainter::", terrainPainter);
+    // console.log("player_plane:20 terrainPainter::", terrainPainter);
     this.terrainPainter = terrainPainter;
 
     this.planeInitialY = y;

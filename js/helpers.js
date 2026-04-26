@@ -2,7 +2,8 @@ import { CAMERA_SCROLL_DELTA, SCENE_ROW_LEN } from "./constants.js";
 
 export function getRandomInt(max) {
   //Generates random integer number from zero to (max-1)
-  return Math.floor(Math.random() * max);
+  const ret = Math.floor(Math.random() * max);
+  return ret;
 }
 
 export function fillArray(tileID) {
@@ -119,8 +120,11 @@ export function getNumberOfSpritesInScene(scene) {
 // }
 
 export function createExplosion(scene, x, y) {
+  console.log("helpers:122 x::", x);
+  console.log("helpers:123 y::", y);
   const explAnimation = scene.add.sprite(x, y, "fuel_gauge");
 
+  
   explAnimation.anims.create({
     key: "explosion",
     frames: scene.anims.generateFrameNames("terrain_atlas", {

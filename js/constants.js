@@ -10,4 +10,8 @@ export const CAMERA_SCROLL_DELTA = 4;
 
 export const STARTING_TILEMAP = "startingMap";
 
+export const DIRECTION_RIGHT = "RIGHT";
+export const DIRECTION_LEFT = "LEFT";
+export const DIRECTION_UNDEFINED = "UNDEF";
+
 
